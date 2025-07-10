@@ -20,7 +20,7 @@ public class LogInPage extends JFrame implements ActionListener {
 
     private JPanel panel;
     private JLabel label, pwLabel, success;
-    private JTextField userText; // This now represents the 'username'
+    private JTextField userText;
     private JPasswordField pwText;
     private JButton button;
 
@@ -65,14 +65,7 @@ public class LogInPage extends JFrame implements ActionListener {
         panel.add(success);
     }
 
-    /**
-     * Authenticates a user against the database using CredentialDAO.
-     *
-     * @param username The username (from userText field).
-     * @param password The password.
-     * @return true if authentication is successful, false otherwise.
-     * @throws SQLException if a database access error occurs.
-     */
+
     private boolean authenticateUser(String username, String password) throws SQLException {
         CredentialDAO credentialDAO = new CredentialDAO();
         return credentialDAO.authenticateUser(username, password);
@@ -81,7 +74,7 @@ public class LogInPage extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         try {
-            String enteredUsername = userText.getText(); // Get username from text field
+            String enteredUsername = userText.getText();
             String enteredPassword = new String(pwText.getPassword());
 
             if (authenticateUser(enteredUsername, enteredPassword)) {

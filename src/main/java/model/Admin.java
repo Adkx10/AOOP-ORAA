@@ -1,12 +1,14 @@
 package model;
 
-import gui.*; // Imports all GUI classes
-import java.sql.SQLException; // Import for database-related exceptions
+import gui.EmployeeData;
+import gui.HomePage;
+import gui.ViewRequest;
+import gui.ViewSalary;
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-// Removed all CSV-related imports (com.opencsv.*, java.io.*)
 public class Admin extends Employee implements DataReader {
 
     private static final Logger LOGGER = Logger.getLogger(Admin.class.getName());

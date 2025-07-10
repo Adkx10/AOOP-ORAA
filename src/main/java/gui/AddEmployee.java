@@ -12,8 +12,8 @@ import dao.PositionDAO;
 import dao.SalaryDAO;
 import java.util.Date;
 import java.util.List;
-import data.DBConnection; // <-- ADD THIS IMPORT
-import java.sql.Connection; // <-- ADD THIS IMPORT
+import data.DBConnection; 
+import java.sql.Connection;
 
 public class AddEmployee extends javax.swing.JFrame {
 
@@ -307,15 +307,14 @@ public class AddEmployee extends javax.swing.JFrame {
     private void addEmpDataActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addEmpDataActionPerformed
         Connection conn = null;
         try {
-            // 1. Get a transactional connection from DBConnection
-            conn = DBConnection.getTransactionalConnection(); //
 
-            // Instantiate DAOs (they will now receive the transactional connection)
+            conn = DBConnection.getTransactionalConnection();
+
+
             EmployeeDAO employeeDAO = new EmployeeDAO();
             CredentialDAO credentialDAO = new CredentialDAO();
             SalaryDAO salaryDAO = new SalaryDAO();
 
-            // Employee Details
             String empLNValue = empLN.getText();
             String empFNValue = empFN.getText();
             Date empDOBValue = empDOB.getDate();
@@ -329,14 +328,11 @@ public class AddEmployee extends javax.swing.JFrame {
             String empPosValue = (String) empPos.getSelectedItem();
             String empSupValue = (String) empSup.getSelectedItem();
 
-            // User/Login Details
             String username = userName.getText().trim();
-            String defaultPassword = "Test123"; // CHANGE THIS FOR PRODUCTION!
+            String defaultPassword = "Test123"; //CHANGE
 
-            // Salary Details
             String basicSalaryText = basicSalary.getText().trim();
 
-            // Input Validations (existing code)
             if (empLNValue.isEmpty() || empFNValue.isEmpty() || empDOBValue == null || empAddValue.isEmpty()
                     || empPNValue.isEmpty() || empSSSNValue.isEmpty() || empPHNValue.isEmpty() || empTINValue.isEmpty() || empPINValue.isEmpty()
                     || empStatValue.isEmpty() || empPosValue == null || empSupValue == null || username.isEmpty() || basicSalaryText.isEmpty()) {
@@ -344,7 +340,6 @@ public class AddEmployee extends javax.swing.JFrame {
                 return;
             }
 
-            // Numeric format validation for Phone & ID numbers
             if (!empPNValue.matches("\\d+(?:-?\\d+)*") || !empSSSNValue.matches("\\d+(?:-?\\d+)*") || !empPHNValue.matches("\\d+(?:-?\\d+)*") || !empTINValue.matches("\\d+(?:-?\\d+)*") || !empPINValue.matches("\\d+(?:-?\\d+)*")) {
                 JOptionPane.showMessageDialog(this, "Please enter numeric values for Phone #, SSS #, PhilHealth #, TIN, and HDMFN.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
                 return;
@@ -364,61 +359,54 @@ public class AddEmployee extends javax.swing.JFrame {
                 return;
             }
 
-            // Database Operations
-            // 1. Check if username already exists (This is a read-only operation, can use its own connection)
             if (credentialDAO.getUserIdByUsername(username) != null) {
                 JOptionPane.showMessageDialog(this, "The username '" + username + "' already exists.", "Add Employee Data", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
-            // 2. Add user to 'user' table - PASS THE TRANSACTIONAL CONNECTION
-            String newUserId = credentialDAO.addUser(conn, username, defaultPassword); //
+            String newUserId = credentialDAO.addUser(conn, username, defaultPassword); 
             if (newUserId == null) {
                 JOptionPane.showMessageDialog(this, "Failed to create user account. Please check logs.", "Add Employee Data", JOptionPane.ERROR_MESSAGE);
-                // No explicit rollback needed here yet, as this is the first write operation in the transaction.
                 return;
             }
 
-            // 3. Assign default role (e.g., "Regular Employee") to the new user - PASS THE TRANSACTIONAL CONNECTION
-            boolean roleAssigned = credentialDAO.assignRoleToUser(conn, newUserId, "Regular Employee"); //
+            boolean roleAssigned = credentialDAO.assignRoleToUser(conn, newUserId, "Regular Employee"); 
             if (!roleAssigned) {
                 JOptionPane.showMessageDialog(this, "Failed to assign default role to user. Please check logs.", "Add Employee Data", JOptionPane.ERROR_MESSAGE);
                 LOGGER.log(Level.WARNING, "Failed to assign 'Regular Employee' role to new user: " + newUserId);
-                conn.rollback(); // Rollback if role assignment fails
+                conn.rollback();
                 return;
             }
 
-            // 4. Create Employee object with the newly generated UserID (which serves as EmployeeID for initial setup)
             Employee newEmployee = new RegularEmployee(
                     newUserId, empFNValue, empLNValue, empAddValue, empDOBValue, empPNValue, empSSSNValue, empPHNValue, empTINValue, empPINValue, empStatValue,
                     empPosValue, empSupValue, basicSalaryValue);
 
-            // 5. Add employee data to 'employee' table - PASS THE TRANSACTIONAL CONNECTION
-            boolean employeeAdded = employeeDAO.addEmployee(conn, newEmployee); //
+            boolean employeeAdded = employeeDAO.addEmployee(conn, newEmployee); 
             if (!employeeAdded) {
                 JOptionPane.showMessageDialog(this, "Failed to add employee details. Please check logs.", "Add Employee Data", JOptionPane.ERROR_MESSAGE);
-                conn.rollback(); // Rollback if employee addition fails
+                conn.rollback();
                 return;
             }
 
-            // 6. Add salary data to 'salary' table - PASS THE TRANSACTIONAL CONNECTION
-            boolean salaryAdded = salaryDAO.addSalary(conn, newUserId, basicSalaryValue); //
+
+            boolean salaryAdded = salaryDAO.addSalary(conn, newUserId, basicSalaryValue); 
             if (!salaryAdded) {
                 JOptionPane.showMessageDialog(this, "Failed to add salary details. Please check logs.", "Add Employee Data", JOptionPane.ERROR_MESSAGE);
-                conn.rollback(); // Rollback if salary addition fails
+                conn.rollback(); 
                 return;
             }
 
-            // If all operations successful, commit the transaction
-            conn.commit(); //
+
+            conn.commit(); 
             JOptionPane.showMessageDialog(this, "Employee, User, and Salary data added successfully.", "Add Employee Data", JOptionPane.INFORMATION_MESSAGE);
             this.dispose();
 
         } catch (SQLException ex) {
-            // If any SQLException occurs, rollback the entire transaction
+
             if (conn != null) {
                 try {
-                    conn.rollback(); //
+                    conn.rollback(); 
                     LOGGER.log(Level.INFO, "Transaction rolled back due to SQL error.");
                 } catch (SQLException rollbackEx) {
                     LOGGER.log(Level.SEVERE, "Error rolling back transaction: " + rollbackEx.getMessage(), rollbackEx);
@@ -430,10 +418,10 @@ public class AddEmployee extends javax.swing.JFrame {
             LOGGER.log(Level.SEVERE, "Number format error in salary calculation: " + ex.getMessage(), ex);
             JOptionPane.showMessageDialog(this, "Invalid numeric input for Basic Salary.", "Input Error", JOptionPane.ERROR_MESSAGE);
         } finally {
-            // Ensure the connection is always closed
+
             if (conn != null) {
                 try {
-                    conn.close(); //
+                    conn.close(); 
                     LOGGER.log(Level.INFO, "Database connection closed.");
                 } catch (SQLException closeEx) {
                     LOGGER.log(Level.SEVERE, "Error closing database connection: " + closeEx.getMessage(), closeEx);
@@ -444,7 +432,7 @@ public class AddEmployee extends javax.swing.JFrame {
 
     private void populatePositionDropdown() {
         try {
-            PositionDAO positionDAO = new PositionDAO(); // This DAO method doesn't need transactional connection
+            PositionDAO positionDAO = new PositionDAO(); 
             List<String> positions = positionDAO.getAllPositionNames();
             empPos.removeAllItems();
             for (String pos : positions) {
@@ -457,7 +445,7 @@ public class AddEmployee extends javax.swing.JFrame {
 
     private void populateSupervisorDropdown() {
         try {
-            EmployeeDAO employeeDAO = new EmployeeDAO(); // This DAO method doesn't need transactional connection
+            EmployeeDAO employeeDAO = new EmployeeDAO();
             List<Employee> allEmployees = employeeDAO.getAllEmployees();
             empSup.removeAllItems();
             for (Employee emp : allEmployees) {

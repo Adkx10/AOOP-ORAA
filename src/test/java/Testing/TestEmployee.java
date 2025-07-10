@@ -241,9 +241,6 @@ public class TestEmployee {
 
     // --- HELPER METHODS ---
 
-    /**
-     * Helper method to create a standard Employee object for tests.
-     */
     private Employee createTestEmployeeObject(String userId, String addressId) {
         Employee testEmp = new RegularEmployee();
         testEmp.setUserID(userId);
@@ -263,9 +260,7 @@ public class TestEmployee {
         return testEmp;
     }
 
-    /**
-     * Inserts a temporary user for testing and returns the generated UserID.
-     */
+
     private int insertTestUser(String username) throws SQLException {
         String sql = "INSERT INTO user (Username, Password) VALUES (?, 'testpass')";
         try (PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -281,9 +276,7 @@ public class TestEmployee {
         }
     }
 
-    /**
-     * Inserts a temporary address for testing and returns the generated AddressID.
-     */
+
     private int insertTestAddress() throws SQLException {
         String sql = "INSERT INTO address (UnitOrHouseStreet, Barangay, CityMunicipality, Province, Region, PostalCode) VALUES ('123 Test St', 'Test Brgy', 'Test City', 'Test Province', 'Test Region', '12345')";
         try (PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -298,9 +291,7 @@ public class TestEmployee {
         }
     }
 
-    /**
-     * Inserts a temporary user role for testing.
-     */
+
     private void insertTestUserRole(int userId, int roleId) throws SQLException {
         String sql = "INSERT INTO userrole (UserID, RoleID) VALUES (?, ?)";
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -310,9 +301,7 @@ public class TestEmployee {
         }
     }
 
-    /**
-     * Performs a hard delete of a test employee and all related data.
-     */
+
     private void deleteTestEmployee(int employeeId, int userId, int addressId) throws SQLException {
         if (employeeId == -1 && userId == -1 && addressId == -1) return;
 

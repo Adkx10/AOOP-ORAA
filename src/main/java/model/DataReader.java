@@ -1,6 +1,6 @@
 package model;
 
-import java.sql.SQLException; // Now throws SQLException for database interactions
+import java.sql.SQLException; 
 
 public interface DataReader {
 

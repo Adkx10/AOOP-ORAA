@@ -1,12 +1,13 @@
 package model;
 
-import gui.*; // Imports all GUI classes
-import java.sql.SQLException; // Import for database-related exceptions
+import gui.EmployeeData;
+import gui.HomePage;
+import gui.ViewRequest;
+import gui.ViewSalary;
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-// Removed all CSV-related imports (com.opencsv.*, java.io.*)
 
 public class RegularEmployee extends Employee implements DataReader {
 
@@ -17,7 +18,7 @@ public class RegularEmployee extends Employee implements DataReader {
         super("", "", "", "", null, "", "", "", "", "", "", "", "", 0.0);
     }
 
-    // For login (sets employeeNo, then data can be read from DB if needed)
+    // For login (sets employeeNo)
     public RegularEmployee(String employeeNo) {
         super(employeeNo);
     }
@@ -53,9 +54,5 @@ public class RegularEmployee extends Employee implements DataReader {
             frame.setVisible(true);
             frame.viewOwnSalary(); // Regular employees only view their own salary
     }
-
-    // The readData method is now implemented in the Employee superclass,
-    // so it's no longer needed here.
-    // @Override
-    // public boolean readData(String empNo, String... params) throws IOException, CsvValidationException { ... }
+    
 }

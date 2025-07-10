@@ -15,9 +15,9 @@ public class DBConnection {
     private static String URL;
     private static String USER;
     private static String PASSWORD;
-    private static boolean propertiesLoaded = false; // Flag to track if properties were loaded
+    private static boolean propertiesLoaded = false; 
 
-    // Static initializer block to load properties once
+    
     static {
         try {
             InputStream input = DBConnection.class.getClassLoader().getResourceAsStream("config/securedb.properties");
@@ -31,7 +31,7 @@ public class DBConnection {
                 USER = prop.getProperty("securedb.user");
                 PASSWORD = prop.getProperty("securedb.password");
 
-                propertiesLoaded = true; // Mark properties as successfully loaded
+                propertiesLoaded = true; 
                 LOGGER.info("Database connection properties loaded successfully!");
             }
         } catch (Exception e) {
@@ -39,36 +39,20 @@ public class DBConnection {
         }
     }
 
-    /**
-     * Provides a standard database connection with auto-commit enabled
-     * (default). This is suitable for single, independent database operations.
-     *
-     * @return A database Connection object.
-     * @throws SQLException if a database access error occurs or properties
-     * failed to load.
-     */
+
     public static Connection getConnection() throws SQLException {
-        if (!propertiesLoaded) { // Check if properties were loaded successfully
+        if (!propertiesLoaded) {  
             throw new SQLException("Database connection details are missing or failed to load. Check securedb.properties and logs for errors.");
         }
         return DriverManager.getConnection(URL, USER, PASSWORD);
     }
 
-    /**
-     * Provides a database connection with auto-commit disabled, allowing for
-     * manual transaction management. This connection must be explicitly
-     * committed or rolled back by the caller.
-     *
-     * @return A database Connection object with auto-commit set to false.
-     * @throws SQLException if a database access error occurs or properties
-     * failed to load.
-     */
     public static Connection getTransactionalConnection() throws SQLException {
-        if (!propertiesLoaded) { // Check if properties were loaded successfully
+        if (!propertiesLoaded) {  
             throw new SQLException("Database connection details are missing or failed to load. Check securedb.properties and logs for errors.");
         }
         Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
-        conn.setAutoCommit(false); // Disable auto-commit for this specific connection
+        conn.setAutoCommit(false);  
         LOGGER.fine("Transactional connection obtained with auto-commit OFF.");
         return conn;
     }

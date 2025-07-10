@@ -13,15 +13,15 @@ import java.util.Date;
 import java.util.Calendar;
 import java.util.List;
 import model.RegularEmployee;
-import data.DBConnection; // Import DBConnection for transactional connections
-import java.sql.Connection; // Import Connection
+import data.DBConnection; 
+import java.sql.Connection; 
 
 public class UpdateEmployee extends javax.swing.JFrame {
 
     private static final Logger LOGGER = Logger.getLogger(UpdateEmployee.class.getName());
     private EmployeeDAO employeeDAO;
     private SalaryDAO salaryDAO;
-    private String currentEmployeeId; // To store the EmployeeID being updated
+    private String currentEmployeeId;
 
     public UpdateEmployee() {
         initComponents();
@@ -39,7 +39,6 @@ public class UpdateEmployee extends javax.swing.JFrame {
             empLN.setText(employeeData.getEmployeeLN());
             empFN.setText(employeeData.getEmployeeFN());
 
-            // Set Date of Birth JDateChooser
             empDOB.setDate(employeeData.getEmployeeDOB());
             empAdd.setText(employeeData.getEmployeeAddress());
             empPN.setText(employeeData.getEmployeePhoneNumber());
@@ -47,12 +46,11 @@ public class UpdateEmployee extends javax.swing.JFrame {
             empPHN.setText(employeeData.getEmployeePhilHealth());
             empTIN.setText(employeeData.getEmployeeTIN());
             empPIN.setText(employeeData.getEmployeePagIbig());
-            // Use setSelectedItem for JComboBox
             empStat.setSelectedItem(employeeData.getEmployeeStatus());
             empPos.setSelectedItem(employeeData.getEmployeePosition());
             empSup.setSelectedItem(employeeData.getEmployeeSupervisor());
 
-            // Retrieve and display latest salary information (read-only, uses own connection)
+            // Retrieve and display latest salary information
             try {
                 SalaryInfo latestSalary = salaryDAO.getLatestSalaryByEmployeeId(currentEmployeeId);
                 if (latestSalary != null) {
@@ -344,9 +342,8 @@ public class UpdateEmployee extends javax.swing.JFrame {
 
     private void updEmpDataActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updEmpDataActionPerformed
 
-        Connection conn = null; // Declare connection variable for transaction
+        Connection conn = null; 
         try {
-            // Get a transactional connection from DBConnection
             conn = DBConnection.getTransactionalConnection(); //
 
             String empLNValue = empLN.getText();
@@ -372,7 +369,7 @@ public class UpdateEmployee extends javax.swing.JFrame {
                 return;
             }
 
-            // Basic validation for numeric fields
+            // Validation for numeric fields
             if (!empPNValue.matches("\\d+(?:-?\\d+)*") || !empSSSNValue.matches("\\d+(?:-?\\d+)*") || !empPHNValue.matches("\\d+(?:-?\\d+)*") || !empTINValue.matches("\\d+(?:-?\\d+)*") || !empPINValue.matches("\\d+(?:-?\\d+)*")) {
                 JOptionPane.showMessageDialog(this, "Please enter numeric values for Phone #, SSS #, PhilHealth #, TIN, and HDMFN.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
                 return;
@@ -392,64 +389,59 @@ public class UpdateEmployee extends javax.swing.JFrame {
                 return;
             }
 
-            // 1. Create an Employee object with the updated data
+            // Create an Employee object with the updated data
             Employee updatedEmployee = new RegularEmployee(
-                    currentEmployeeId, // Use the stored Employee ID
+                    currentEmployeeId, 
                     empFNValue, empLNValue, empAddValue, normalizeDateToMidnight(empDOBValue), empPNValue,
                     empSSSNValue, empPHNValue, empTINValue, empPINValue, empStatValue,
-                    empPosValue, empSupValue, basicSalary // Pass basicSalary to constructor
+                    empPosValue, empSupValue, basicSalary 
             );
 
-            // 2. Update employee data in 'employee' table - PASS THE TRANSACTIONAL CONNECTION
-            boolean employeeUpdated = employeeDAO.updateEmployee(conn, updatedEmployee); //
+            // Update employee data in 'employee' table
+            boolean employeeUpdated = employeeDAO.updateEmployee(conn, updatedEmployee);
             if (!employeeUpdated) {
                 JOptionPane.showMessageDialog(this, "Failed to update employee details. Please check logs.", "Update Employee Data", JOptionPane.ERROR_MESSAGE);
-                conn.rollback(); // Rollback if employee update fails
+                conn.rollback(); 
                 return;
             }
 
-            // 3. Handle Salary Update (soft delete old, insert new if basic salary changed)
-            // Get latest salary info (read-only, uses its own connection implicitly by the DAO method)
+            // Handle Salary Update (soft delete old, insert new if basic salary changed)
+            // Get latest salary info 
             SalaryInfo currentSalaryInfo = salaryDAO.getLatestSalaryByEmployeeId(currentEmployeeId);
 
             // Check if basic salary has changed
-            // Need to compare basicSalary (from GUI) with currentSalaryInfo.basicSalary (from DB)
-            boolean salaryChanged = (currentSalaryInfo == null) // No existing salary record
-                    || (Math.abs(currentSalaryInfo.basicSalary - basicSalary) > 0.001); // Compare doubles with a small tolerance
+            boolean salaryChanged = (currentSalaryInfo == null) 
+                    || (Math.abs(currentSalaryInfo.basicSalary - basicSalary) > 0.001); 
 
             if (salaryChanged) {
-                // Soft delete the old salary record if one exists - PASS THE TRANSACTIONAL CONNECTION
                 if (currentSalaryInfo != null) {
-                    boolean softDeleted = salaryDAO.softDeleteCurrentSalary(conn, currentEmployeeId); //
+                    boolean softDeleted = salaryDAO.softDeleteCurrentSalary(conn, currentEmployeeId); 
                     if (!softDeleted) {
                         LOGGER.log(Level.WARNING, "Failed to soft-delete old salary record for employee: " + currentEmployeeId);
-                        // Decide if this is a critical failure that should rollback the whole transaction
-                        // For now, if soft delete fails but basic employee update succeeded, we might still want to proceed.
-                        // However, for atomic salary update (old inactive, new active), you MUST rollback.
                         conn.rollback();
                         JOptionPane.showMessageDialog(this, "Failed to deactivate old salary record. Update aborted.", "Update Employee Data", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
                 }
-                // Insert the new salary record - PASS THE TRANSACTIONAL CONNECTION
-                boolean salaryAdded = salaryDAO.addSalary(conn, currentEmployeeId, basicSalary); //
+                // Insert the new salary record
+                boolean salaryAdded = salaryDAO.addSalary(conn, currentEmployeeId, basicSalary); 
                 if (!salaryAdded) {
                     JOptionPane.showMessageDialog(this, "Failed to add new salary record. Please check logs.", "Update Employee Data", JOptionPane.ERROR_MESSAGE);
-                    conn.rollback(); // Rollback if new salary addition fails
+                    conn.rollback(); 
                     return;
                 }
             }
 
-            // If all operations successful, commit the transaction
+            
             conn.commit(); //
             JOptionPane.showMessageDialog(this, "Employee data and salary updated successfully.", "Update Employee Data", JOptionPane.INFORMATION_MESSAGE);
-            this.dispose(); // Close the update frame
+            this.dispose(); 
 
         } catch (SQLException ex) {
-            // If any SQLException occurs, rollback the entire transaction
+            
             if (conn != null) {
                 try {
-                    conn.rollback(); //
+                    conn.rollback(); 
                     LOGGER.log(Level.INFO, "Transaction rolled back due to SQL error.");
                 } catch (SQLException rollbackEx) {
                     LOGGER.log(Level.SEVERE, "Error rolling back transaction: " + rollbackEx.getMessage(), rollbackEx);
@@ -461,10 +453,10 @@ public class UpdateEmployee extends javax.swing.JFrame {
             LOGGER.log(Level.SEVERE, "Number format error in salary calculation: " + ex.getMessage(), ex);
             JOptionPane.showMessageDialog(this, "Invalid numeric input for Basic Salary.", "Input Error", JOptionPane.ERROR_MESSAGE);
         } finally {
-            // Ensure the connection is always closed
+            
             if (conn != null) {
                 try {
-                    conn.close(); //
+                    conn.close(); 
                     LOGGER.log(Level.INFO, "Database connection closed.");
                 } catch (SQLException closeEx) {
                     LOGGER.log(Level.SEVERE, "Error closing database connection: " + closeEx.getMessage(), closeEx);
@@ -488,7 +480,7 @@ public class UpdateEmployee extends javax.swing.JFrame {
 
     private void populatePositionDropdown() {
         try {
-            PositionDAO positionDAO = new PositionDAO(); // This DAO method doesn't need transactional connection
+            PositionDAO positionDAO = new PositionDAO(); 
             List<String> positions = positionDAO.getAllPositionNames();
             empPos.removeAllItems();
             for (String pos : positions) {
@@ -501,7 +493,7 @@ public class UpdateEmployee extends javax.swing.JFrame {
 
     private void populateSupervisorDropdown() {
         try {
-            EmployeeDAO employeeDAO = new EmployeeDAO(); // This DAO method doesn't need transactional connection
+            EmployeeDAO employeeDAO = new EmployeeDAO(); 
             List<Employee> allEmployees = employeeDAO.getAllEmployees();
             empSup.removeAllItems();
             for (Employee emp : allEmployees) {

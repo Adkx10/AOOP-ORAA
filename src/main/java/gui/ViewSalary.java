@@ -18,7 +18,7 @@ import dao.AttendanceDAO;
 import dao.EmployeeDAO;
 import dao.PayslipDAO;
 import dao.SalaryDAO;
-import dao.AllowanceDAO; // Correct import if AllowanceDAO is in model package, otherwise change to dao.AllowanceDAO
+import dao.AllowanceDAO;
 import model.Payslip;
 import dao.AttendanceDAO.AttendanceRecord;
 import dao.PayrollDAO;
@@ -26,7 +26,11 @@ import data.DBConnection;
 import java.sql.Connection;
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.HashMap;
+import java.util.Map;
 import model.Payroll;
+import utilities.ReportGenerator;
+import utilities.UtilMethods;
 
 public class ViewSalary extends javax.swing.JFrame {
 
@@ -38,8 +42,8 @@ public class ViewSalary extends javax.swing.JFrame {
     private EmployeeDAO employeeDAO;
     private AttendanceDAO attendanceDAO;
     private PayslipDAO payslipDAO;
-    private SalaryDAO salaryDAO; // Declare SalaryDAO
-    private AllowanceDAO allowanceDAO; // Declare AllowanceDAO
+    private SalaryDAO salaryDAO;
+    private AllowanceDAO allowanceDAO;
 
     public ViewSalary() {
         this(null, null);
@@ -72,6 +76,12 @@ public class ViewSalary extends javax.swing.JFrame {
         initComponents();
         showDate();
         this.setLocationRelativeTo(null);
+        
+        if (currentUser instanceof Manager){
+            jButton2.setVisible(false);
+            payrollRunButton.setVisible(false);
+            jLabel1.setVisible(false);
+        }
     }
 
     public void setCurrentUser(Employee currentUser) {
@@ -88,6 +98,9 @@ public class ViewSalary extends javax.swing.JFrame {
         viewCompensation.setVisible(true);
         employeeNo.setText(empNo);
         employeeNo.setEditable(false);
+        payrollRunButton.setVisible(false);
+        jLabel1.setVisible(false);
+        jButton2.setVisible(false);
     }
 
     /**
@@ -122,6 +135,9 @@ public class ViewSalary extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
         showData = new javax.swing.JTextArea();
+        genPayslip = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
+        govContriReport = new javax.swing.JButton();
 
         hw1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "January", "February", "March", "April", "June", "July", "August", "September", "October", "November", "December" }));
 
@@ -149,7 +165,7 @@ public class ViewSalary extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(20, 20, 20)
                 .addComponent(label4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 610, Short.MAX_VALUE)
                 .addComponent(date)
                 .addGap(20, 20, 20))
         );
@@ -222,76 +238,6 @@ public class ViewSalary extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel1.setText("Select the Month and Year");
 
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(backButton))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(18, 18, 18)
-                        .addComponent(label3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
-                            .addGap(26, 26, 26)
-                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addComponent(label1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(label2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(year, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(employeeNo, javax.swing.GroupLayout.DEFAULT_SIZE, 110, Short.MAX_VALUE)
-                                .addComponent(hw, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jYearChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGap(25, 25, 25))
-                        .addGroup(jPanel2Layout.createSequentialGroup()
-                            .addContainerGap()
-                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(jLabel1)
-                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(viewCompensation, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(viewButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(viewButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(payrollRunButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))))
-                .addContainerGap(35, Short.MAX_VALUE))
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(37, 37, 37)
-                .addComponent(label3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(26, 26, 26)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(label1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(employeeNo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(label2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(hw, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(year, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jYearChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(9, 9, 9)
-                .addComponent(viewButton)
-                .addGap(12, 12, 12)
-                .addComponent(viewButton1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(viewCompensation)
-                .addGap(13, 13, 13)
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(payrollRunButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 67, Short.MAX_VALUE)
-                .addComponent(backButton)
-                .addContainerGap())
-        );
-
-        label2.getAccessibleContext().setAccessibleName("Month (Ex. July):");
-
         showData.setEditable(false);
         showData.setColumns(20);
         showData.setRows(5);
@@ -299,26 +245,135 @@ public class ViewSalary extends javax.swing.JFrame {
         showData.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         jScrollPane2.setViewportView(showData);
 
+        genPayslip.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        genPayslip.setText("Generate Payslip");
+        genPayslip.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                genPayslipActionPerformed(evt);
+            }
+        });
+
+        jButton2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jButton2.setText("Payroll Summary Report");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
+        govContriReport.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        govContriReport.setText("YTD Gov Contribution Report");
+        govContriReport.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                govContriReportActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addGap(57, 57, 57)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jLabel1)
+                                    .addComponent(viewCompensation, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(viewButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(viewButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(payrollRunButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(backButton))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(label2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(label1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(year, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(employeeNo)
+                                    .addComponent(hw, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jYearChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addGap(56, 56, 56))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addComponent(label3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 448, Short.MAX_VALUE)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(genPayslip)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(govContriReport)
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(34, 34, 34)
+                        .addComponent(label3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(employeeNo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(label1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(hw, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(label2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(year, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jYearChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(viewButton)
+                        .addGap(12, 12, 12)
+                        .addComponent(viewButton1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(viewCompensation)
+                        .addGap(13, 13, 13)
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(payrollRunButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jButton2)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 393, Short.MAX_VALUE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(backButton)
+                    .addComponent(genPayslip)
+                    .addComponent(govContriReport))
+                .addContainerGap())
+        );
+
+        label2.getAccessibleContext().setAccessibleName("Month (Ex. July):");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 700, Short.MAX_VALUE)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(12, 12, 12)
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 362, Short.MAX_VALUE)
-                .addGap(14, 14, 14))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(6, 6, 6)
+                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 760, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPane2))
+                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -326,7 +381,6 @@ public class ViewSalary extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    // To view the newly added employee, its credentials must be created first.
     private void viewButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewButtonActionPerformed
         try {
             String enteredEmpNo = employeeNo.getText().trim();
@@ -340,6 +394,13 @@ public class ViewSalary extends javax.swing.JFrame {
             }
 
             // --- Access Control Check ---
+            // Apply Manager-specific restrictions for viewing payslips, attendance, compensation.
+            // Managers can view:
+            // - their own payslip
+            // - RegularEmployee payslips only
+            // Managers CANNOT view:
+            // - Admins
+            // - Other Managers
             // Fetch the target employee's actual object to check its type (Admin/Manager/Regular)
             Employee employeeToCheck = employeeDAO.getEmployeeByEmployeeNo(enteredEmpNo);
             if (employeeToCheck == null) {
@@ -347,25 +408,11 @@ public class ViewSalary extends javax.swing.JFrame {
                 return;
             }
 
-            // Apply Manager-specific restrictions for viewing payslips
-            if (currentUser instanceof Manager manager) {
-                // Managers can view:
-                // - their own payslip
-                // - RegularEmployee payslips only
-                // Managers CANNOT view:
-                // - Admins
-                // - Other Managers
-
-                boolean isSelf = enteredEmpNo.equalsIgnoreCase(manager.getEmployeeNo());
-                boolean isAdmin = employeeToCheck instanceof Admin;
-                boolean isManager = employeeToCheck instanceof Manager;
-
-                if (isAdmin || (isManager && !isSelf)) {
-                    JOptionPane.showMessageDialog(this,
-                            "Access Denied! You cannot view payslips for Admins or other Managers.",
-                            "Restricted Access", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
+            if (!UtilMethods.canManagerViewEmployee(currentUser, employeeToCheck)) {
+                JOptionPane.showMessageDialog(this,
+                        "Access Denied! You cannot view payslips for Admins or other Managers.",
+                        "Restricted Access", JOptionPane.ERROR_MESSAGE);
+                return;
             }
 
             // --- Use PayslipDAO to get the complete payslip ---
@@ -431,21 +478,17 @@ public class ViewSalary extends javax.swing.JFrame {
                 return;
             }
 
-            // Fetch Employee object directly using EmployeeDAO
+            // --- Access Control Check ---
             Employee employeeToCheck = employeeDAO.getEmployeeByEmployeeNo(enteredEmpNo);
-
-            // --- Access Control Logic for Manager ---
-            if (currentUser instanceof Manager manager) {
-                if (employeeToCheck instanceof Admin || (employeeToCheck instanceof Manager && !enteredEmpNo.equals(manager.getEmployeeNo()))) {
-                    JOptionPane.showMessageDialog(this, "Access Denied! You cannot view compensation details for Admins or other Managers.",
-                            "Restricted Access", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-            }
-
-            // Check if employee was found
             if (employeeToCheck == null) {
                 JOptionPane.showMessageDialog(this, "Employee not found!", "Search Result", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            if (!UtilMethods.canManagerViewEmployee(currentUser, employeeToCheck)) {
+                JOptionPane.showMessageDialog(this,
+                        "Access Denied! You cannot view compensation details for Admins or other Managers.",
+                        "Restricted Access", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
@@ -512,28 +555,20 @@ public class ViewSalary extends javax.swing.JFrame {
                 return;
             }
 
-            // Fetch Employee object directly using EmployeeDAO (for access control and name lookup)
+            // --- Access Control Check ---
             Employee employeeToCheck = employeeDAO.getEmployeeByEmployeeNo(enteredEmpNo);
-
-            // --- Access Control Logic for Manager ---
-            // If the current user is a Manager:
-            if (currentUser instanceof Manager manager) {
-                // A manager can only view their own attendance or attendance of Regular Employees.
-                // They cannot view Admins' or other Managers' attendance.
-                if (employeeToCheck instanceof Admin || (employeeToCheck instanceof Manager && !enteredEmpNo.equals(manager.getEmployeeNo()))) {
-                    JOptionPane.showMessageDialog(this, "Access Denied! You cannot view attendance for Admins or other Managers.",
-                            "Restricted Access", JOptionPane.ERROR_MESSAGE);
-                    return; // Stop execution
-                }
-            }
-
-            // Check if employee exists
             if (employeeToCheck == null) {
                 JOptionPane.showMessageDialog(this, "Employee not found!", "Search Result", JOptionPane.WARNING_MESSAGE);
                 return;
             }
 
-            // Populate employee basic info for display (already done by employeeDAO.getEmployeeByEmployeeNo above)
+            if (!UtilMethods.canManagerViewEmployee(currentUser, employeeToCheck)) {
+                JOptionPane.showMessageDialog(this,
+                        "Access Denied! You cannot view attendance for Admins or other Managers.",
+                        "Restricted Access", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
             // Fetch attendance records from the database
             List<AttendanceRecord> records = attendanceDAO.getAttendanceRecordsByEmployeeAndMonth(enteredEmpNo, month, selectedYear);
 
@@ -581,7 +616,7 @@ public class ViewSalary extends javax.swing.JFrame {
 
         try {
             PayrollDAO payrollDAO = new PayrollDAO();
-            // payrollDAO.calculatePayroll already manages its own transactional connection internally.
+
             payrollDAO.calculatePayroll(payrollPeriodName, payrollStartDate, payrollEndDate);
             JOptionPane.showMessageDialog(this, "Payroll calculation completed.", "Success", JOptionPane.INFORMATION_MESSAGE);
         } catch (SQLException ex) {
@@ -590,12 +625,127 @@ public class ViewSalary extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_payrollRunButtonActionPerformed
 
+    private void genPayslipActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_genPayslipActionPerformed
+        try (Connection conn = DBConnection.getConnection()) {
+
+            String employeeId = employeeNo.getText().trim();
+            int month = UtilMethods.getMonthIndex(hw.getSelectedItem().toString());   // or from a dropdown
+            int year = jYearChooser1.getYear();
+
+            if (employeeId.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please enter an employee number.",
+                        "Invalid Input", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            // --- Access Control Check ---
+            Employee employeeToCheck = employeeDAO.getEmployeeByEmployeeNo(employeeId);
+            if (employeeToCheck == null) {
+                JOptionPane.showMessageDialog(this, "Employee not found!", "Search Result", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            if (!UtilMethods.canManagerViewEmployee(currentUser, employeeToCheck)) {
+                JOptionPane.showMessageDialog(this,
+                        "Access Denied! You cannot generate payslip for Admins or other Managers.",
+                        "Restricted Access", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Put into parameters map
+            Map<String, Object> parameters = new HashMap<>();
+            parameters.put("EmployeeID", Integer.valueOf(employeeId));
+            parameters.put("Month", month);
+            parameters.put("Year", year);
+
+            // Generate report
+            ReportGenerator generator = new ReportGenerator();
+            generator.generateReport("src/main/resources/PayslipGenerated.jrxml", parameters, conn);
+
+        } catch (Exception ex) {
+            Logger.getLogger(ViewSalary.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_genPayslipActionPerformed
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        try (Connection conn = DBConnection.getConnection()) {
+
+            int month = UtilMethods.getMonthIndex(hw.getSelectedItem().toString()); 
+            int year = jYearChooser1.getYear();
+
+            // --- Access Control Check ---
+            Employee employeeToCheck = employeeDAO.getEmployeeByEmployeeNo(currentUser.getEmployeeNo());
+            if (employeeToCheck == null) {
+                JOptionPane.showMessageDialog(this, "Employee not found!", "Search Result", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            if (!UtilMethods.canManagerViewEmployee(currentUser, employeeToCheck)) {
+                JOptionPane.showMessageDialog(this,
+                        "Access Denied! You cannot generate payslip for Admins or other Managers.",
+                        "Restricted Access", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Put into parameters map
+            Map<String, Object> parameters = new HashMap<>();
+            parameters.put("Month", month);
+            parameters.put("Year", year);
+
+            // Generate report
+            ReportGenerator generator = new ReportGenerator();
+            generator.generateReport("src/main/resources/PayrollSummaryReport.jrxml", parameters, conn);
+
+        } catch (Exception ex) {
+            Logger.getLogger(ViewSalary.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void govContriReportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_govContriReportActionPerformed
+        try (Connection conn = DBConnection.getConnection()) {
+
+            String employeeId = employeeNo.getText().trim();
+            int year = jYearChooser1.getYear();
+
+            if (employeeId.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please enter an employee number.",
+                        "Invalid Input", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            // --- Access Control Check ---
+            Employee employeeToCheck = employeeDAO.getEmployeeByEmployeeNo(employeeId);
+            if (employeeToCheck == null) {
+                JOptionPane.showMessageDialog(this, "Employee not found!", "Search Result", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            if (!UtilMethods.canManagerViewEmployee(currentUser, employeeToCheck)) {
+                JOptionPane.showMessageDialog(this,
+                        "Access Denied! You cannot generate this report for Admins or other Managers.",
+                        "Restricted Access", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Put into parameters map
+            Map<String, Object> parameters = new HashMap<>();
+            parameters.put("EmployeeID", Integer.valueOf(employeeId));
+            parameters.put("Year", year);
+
+            // Generate report
+            ReportGenerator generator = new ReportGenerator();
+            generator.generateReport("src/main/resources/AnnualGovContributionReport.jrxml", parameters, conn);
+
+        } catch (Exception ex) {
+            Logger.getLogger(ViewSalary.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_govContriReportActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton backButton;
     private javax.swing.JLabel date;
     private javax.swing.JTextField employeeNo;
+    private javax.swing.JButton genPayslip;
+    private javax.swing.JButton govContriReport;
     private javax.swing.JComboBox<String> hw;
     private javax.swing.JComboBox<String> hw1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;

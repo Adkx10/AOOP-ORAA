@@ -4,7 +4,7 @@ import java.time.LocalDate;
 
 public class Payroll {
 
-    private int payrollId;            // Optional: If you store in a payroll table
+    private int payrollId;
     private String employeeNo;
     private String employeeName;
     private String position;
@@ -50,7 +50,7 @@ public class Payroll {
         this.paymentDate = paymentDate;
     }
 
-    // --- Getters and Setters ---
+   
     public String getEmployeeNo() {
         return employeeNo;
     }

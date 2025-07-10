@@ -6,7 +6,7 @@ import gui.HomePage;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.Date;
-import java.util.List; // Import for List
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -18,7 +18,7 @@ public abstract class Employee implements DataReader {
     private String employeeFN;
     private String employeeLN;
     private String employeeAddress;
-    private Date employeeDOB; // Changed to Date
+    private Date employeeDOB;
     private String employeePhoneNumber;
     private String employeeSSS;
     private String employeePhilHealth;
@@ -27,11 +27,7 @@ public abstract class Employee implements DataReader {
     private String employeeStatus;
     private String employeePosition;
     private String employeeSupervisor;
-    //private double rice;
-    //private double phone;
-    //private double cloth;
-    private double basicSalary; // Included basicSalary in Employee model
-    //private double grossSemiMonthly;
+    private double basicSalary; 
     private String userID; // This is the EmployeeID from the 'user' table
     private HomePage homePage;
     DecimalFormat df = new DecimalFormat("#,##0.00");
@@ -57,10 +53,9 @@ public abstract class Employee implements DataReader {
         this.employeeStatus = employeeStatus;
         this.employeePosition = employeePosition;
         this.employeeSupervisor = employeeSupervisor;
-        this.basicSalary = basicSalary; // Set basic salary directly
+        this.basicSalary = basicSalary;
     }
 
-    // --- Getter Methods ---
     public String getEmployeeNo() {
         return employeeNo;
     }
@@ -125,7 +120,7 @@ public abstract class Employee implements DataReader {
         return userID;
     }
 
-    // --- Setter Methods ---
+
     public void setEmployeeNo(String newEmployeeNo) {
         this.employeeNo = newEmployeeNo;
     }
@@ -190,18 +185,7 @@ public abstract class Employee implements DataReader {
         this.userID = UserID;
     }
 
-    /**
-     * Factory Method: Creates an Employee object based on username. It now
-     * fetches the UserID (EmployeeID) and ALL associated RoleNames from the
-     * database, then determines the most privileged role for instantiation.
-     *
-     * @param username The username used for login (e.g., "mark.bautista").
-     * @return An instance of Admin, Manager, or RegularEmployee, or null if not
-     * found.
-     * @throws SQLException if a database access error occurs.
-     * @throws IllegalArgumentException if an unknown role name is found in the
-     * database.
-     */
+
     public static Employee createEmployeeInstance(String username) throws SQLException {
         CredentialDAO credentialDAO = new CredentialDAO();
 
@@ -228,15 +212,7 @@ public abstract class Employee implements DataReader {
         }
     }
 
-    /**
-     * Reads employee data from the database and populates the current object's
-     * fields. This method implements the DataReader interface and uses
-     * EmployeeDAO.
-     *
-     * @param empNo The employee number for which to fetch data.
-     * @return true if employee data was found and populated, false otherwise.
-     * @throws SQLException if a database access error occurs.
-     */
+
     @Override
     public boolean readData(String empNo) throws SQLException {
         EmployeeDAO employeeDAO = new EmployeeDAO();
@@ -270,7 +246,4 @@ public abstract class Employee implements DataReader {
 
     public abstract void viewSalary();
 
-    public void setAddressID(String addressId) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
 }

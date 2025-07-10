@@ -6,17 +6,17 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import dao.LeaveRequestDAO;
-import java.util.Date; // Import java.util.Date
+import java.util.Date;
 import model.LeaveRequest;
-import data.DBConnection; // Import DBConnection
-import java.sql.Connection; // Import Connection
+import data.DBConnection;
+import java.sql.Connection;
 
 public class Remarks extends javax.swing.JFrame {
 
     private static final Logger LOGGER = Logger.getLogger(Remarks.class.getName());
 
     private final String empNo;
-    private final Date date; // Changed to java.util.Date
+    private final Date date;
     private final ViewRequest viewRequest;
     private LeaveRequestDAO leaveRequestDAO;
 
@@ -29,36 +29,26 @@ public class Remarks extends javax.swing.JFrame {
         this.setLocationRelativeTo(null);
     }
 
-    /**
-     * Updates the status and remarks of a specific leave request in the database.
-     * This method now manages its own transaction.
-     *
-     * @param empNo The employee number of the request.
-     * @param requestDate The date of the request (java.util.Date).
-     * @param newStatus The new status to set (e.g., "Rejected").
-     * @param newRemarks The new remarks.
-     * @param approvedByEmployeeId The ID of the employee who approved/rejected.
-     */
     private void updateRequestRemarks(String empNo, Date requestDate, String newStatus, String newRemarks, String approvedByEmployeeId) {
-        Connection conn = null; // Declare connection for transaction
+        Connection conn = null; 
         try {
-            conn = DBConnection.getTransactionalConnection(); // Get transactional connection
+            conn = DBConnection.getTransactionalConnection(); 
 
-            boolean success = leaveRequestDAO.updateLeaveRequestStatusAndRemarks(conn, empNo, requestDate, newStatus, newRemarks, approvedByEmployeeId); // Pass connection
+            boolean success = leaveRequestDAO.updateLeaveRequestStatusAndRemarks(conn, empNo, requestDate, newStatus, newRemarks, approvedByEmployeeId); 
 
             if (success) {
-                conn.commit(); // Commit transaction on success
+                conn.commit();
                 JOptionPane.showMessageDialog(this, "Remarks updated successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
                 this.dispose();
                 if (viewRequest != null) {
-                    viewRequest.readData(null, null); // Re-load all or relevant requests (read-only, uses its own connection)
+                    viewRequest.readData(null, null); 
                 }
             } else {
-                conn.rollback(); // Rollback if DAO method returns false
+                conn.rollback(); 
                 JOptionPane.showMessageDialog(this, "Failed to update remarks. Request not found or database error.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         } catch (SQLException ex) {
-            // Rollback on any SQL error
+            
             if (conn != null) {
                 try {
                     conn.rollback();
@@ -70,7 +60,7 @@ public class Remarks extends javax.swing.JFrame {
             LOGGER.log(Level.SEVERE, "Database error updating request remarks for employee: " + empNo + " on date: " + requestDate, ex);
             JOptionPane.showMessageDialog(this, "Database error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         } finally {
-            // Always close the connection
+           
             if (conn != null) {
                 try {
                     conn.close();
@@ -140,17 +130,15 @@ public class Remarks extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Remarks cannot be empty.", "Input Error", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        String newStatus = "Rejected"; // Remarks implies rejection as per original code
+        String newStatus = "Rejected"; 
 
-        // You need to pass the ApprovedByEmployeeID (current user's ID)
-        // For Remarks, it's typically a manager/admin rejecting.
-        // Assuming the current user is accessible via viewRequest.currentUser.getEmployeeNo()
+
         String approvedByEmployeeId = "";
         if (viewRequest != null && viewRequest.getCurrentUser() != null) {
             approvedByEmployeeId = viewRequest.getCurrentUser().getEmployeeNo();
         } else {
             LOGGER.log(Level.WARNING, "Current user not found for Remarks. ApprovedByEmployeeID will be empty.");
-            // You might want to handle this case more robustly, e.g., prevent submission
+            
         }
 
         updateRequestRemarks(empNo, date, newStatus, newRemarks, approvedByEmployeeId);

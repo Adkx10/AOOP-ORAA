@@ -57,7 +57,7 @@ public class Payslip {
         this.takeHomePay = takeHomePay;
     }
 
-    // --- Getters for all fields ---
+
     public String getPayslipNo() {
         return payslipNo;
     }
@@ -142,5 +142,4 @@ public class Payslip {
         return takeHomePay;
     }
 
-    // No setters included as these objects are typically read-only from a view.
 }

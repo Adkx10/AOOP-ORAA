@@ -15,8 +15,8 @@ import model.Admin;
 import model.Manager;
 import model.RegularEmployee;
 import dao.EmployeeDAO;
-import data.DBConnection; // Import DBConnection for transactional connections
-import java.sql.Connection; // Import Connection
+import data.DBConnection; 
+import java.sql.Connection; 
 
 public class EmployeeData extends javax.swing.JFrame {
 
@@ -25,7 +25,7 @@ public class EmployeeData extends javax.swing.JFrame {
     private String empNo;
     private HomePage homePage;
     private Employee currentUser;
-    private EmployeeDAO employeeDAO; // Declare EmployeeDAO
+    private EmployeeDAO employeeDAO; 
     SimpleDateFormat s = new SimpleDateFormat("yyyy-MM-dd");
 
     // Constructor for Testing (no current user, no specific employee)
@@ -38,47 +38,46 @@ public class EmployeeData extends javax.swing.JFrame {
         this.homePage = homePage;
         this.currentUser = (homePage != null) ? homePage.getCurrentUser() : null;
         this.empNo = (currentUser != null) ? currentUser.getEmployeeNo() : null;
-        this.employeeDAO = new EmployeeDAO(); // Initialize EmployeeDAO
+        this.employeeDAO = new EmployeeDAO();
         initComponents();
         showDate();
 
         // This displays the entire table for Admin and Manager, while Regular Employees can only see their own information.
         try {
             if (currentUser instanceof Admin || currentUser instanceof Manager) {
-                readData(null); // Load all employees for Admin/Manager
+                readData(null);
             } else if (currentUser instanceof RegularEmployee) {
-                readData(empNo); // Load specific employee for RegularEmployee
+                readData(empNo);
             }
-        } catch (SQLException ex) { // Catch SQLException for database errors
+        } catch (SQLException ex) { 
             LOGGER.log(Level.SEVERE, "Database error initializing EmployeeData GUI", ex);
             JOptionPane.showMessageDialog(this, "Database error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    // Show the current date on the UI
+    
     private void showDate() {
         Date d = new Date();
         jLabel3.setText(s.format(d));
     }
 
-    // Reads employee data from DB and filters by empNo if provided
+    
     public boolean readData(String empNoToSearch) throws SQLException {
         boolean empFound = false;
         DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
-        model.setRowCount(0); // Clear table before loading new data
+        model.setRowCount(0); 
         jTable1.setAutoCreateRowSorter(true);
 
         List<Employee> employees;
-        // This is a read-only operation, so it uses the standard connection.
+        
         if (empNoToSearch == null || empNoToSearch.isEmpty()) {
-            employees = employeeDAO.getAllEmployees(); // Get all employees
+            employees = employeeDAO.getAllEmployees(); 
         } else {
-            // Get a specific employee and add to a list for consistent processing
             Employee foundEmployee = employeeDAO.getEmployeeByEmployeeNo(empNoToSearch);
             employees = new ArrayList<>();
             if (foundEmployee != null) {
                 employees.add(foundEmployee);
-                empFound = true; // Mark as found if a specific employee was searched and found
+                empFound = true; 
             }
         }
 
@@ -116,7 +115,7 @@ public class EmployeeData extends javax.swing.JFrame {
         addButton.setVisible(false);
         deleteButton.setVisible(false);
         updateButton.setVisible(false);
-        jTable1.setEnabled(false); // Make table cells uneditable
+        jTable1.setEnabled(false); 
     }
 
     // Configures the UI to show only the current user's information and make it read-only
@@ -126,13 +125,13 @@ public class EmployeeData extends javax.swing.JFrame {
         updateButton.setVisible(false);
         refreshButton.setVisible(false);
         searchButton.setVisible(false);
-        employeeNo.setText(empNo); // Set employee number field to current user's ID
-        employeeNo.setEditable(false); // Make it uneditable
+        employeeNo.setText(empNo); 
+        employeeNo.setEditable(false); 
 
         // Make table read-only
         jTable1.setDefaultEditor(Object.class, null);
 
-        // Ensure only the current user's details are visible
+        
         try {
             readData(empNo); // Load only the current user's data
         } catch (SQLException ex) {
@@ -382,16 +381,16 @@ public class EmployeeData extends javax.swing.JFrame {
     }//GEN-LAST:event_addButtonActionPerformed
 
     private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
-        Connection conn = null; // Declare connection
+        Connection conn = null; 
         try {
-            String empToDelete = employeeNo.getText(); // Get employee number to delete
+            String empToDelete = employeeNo.getText(); 
             
             if (empToDelete.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Please enter an employee number to delete.", "Delete Employee", JOptionPane.WARNING_MESSAGE);
                 return;
             }
             
-            // Check if employee exists before attempting to delete (read-only, uses own connection)
+            // Check if employee exists before attempting to delete
             if (employeeDAO.getEmployeeByEmployeeNo(empToDelete) == null) {
                 JOptionPane.showMessageDialog(this, "Employee number does not exist!", "Delete Employee", JOptionPane.WARNING_MESSAGE);
                 return;
@@ -402,30 +401,28 @@ public class EmployeeData extends javax.swing.JFrame {
                 return; // User cancelled deletion
             }
             
-            // Get a transactional connection for the deletion
-            conn = DBConnection.getTransactionalConnection(); //
+
+            conn = DBConnection.getTransactionalConnection();
             
-            // Attempt to soft-delete the employee from the database
-            // Pass the transactional connection to the DAO method
-            boolean success = employeeDAO.deleteEmployee(conn, empToDelete); //
+
+            boolean success = employeeDAO.deleteEmployee(conn, empToDelete); 
             
             if (success) {
-                conn.commit(); // Commit the transaction if successful
-                // If deletion successful from DB, remove from JTable as well
+                conn.commit(); 
+
                 DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
                 for (int i = 0; i < model.getRowCount(); i++) {
-                    if (Objects.equals(model.getValueAt(i, 0), empToDelete)) { // Use Objects.equals for null-safe comparison
+                    if (Objects.equals(model.getValueAt(i, 0), empToDelete)) { 
                         model.removeRow(i);
-                        break; // Stop searching after the row is deleted
+                        break; 
                     }
                 }
                 JOptionPane.showMessageDialog(this, "Employee data soft-deleted successfully.", "Delete Employee", JOptionPane.INFORMATION_MESSAGE);
             } else {
-                conn.rollback(); // Rollback if deletion failed
+                conn.rollback(); 
                 JOptionPane.showMessageDialog(this, "Failed to delete employee data. Please check logs.", "Delete Employee", JOptionPane.ERROR_MESSAGE);
             }
         } catch (SQLException ex) {
-            // Rollback on any SQL error
             if (conn != null) {
                 try {
                     conn.rollback();
@@ -437,7 +434,6 @@ public class EmployeeData extends javax.swing.JFrame {
             LOGGER.log(Level.SEVERE, "Database error during employee deletion: " + ex.getMessage(), ex);
             JOptionPane.showMessageDialog(this, "Database error: " + ex.getMessage(), "Delete Employee", JOptionPane.ERROR_MESSAGE);
         } finally {
-            // Always close the connection
             if (conn != null) {
                 try {
                     conn.close();
@@ -457,7 +453,7 @@ public class EmployeeData extends javax.swing.JFrame {
                 return;
             }
             
-            // Retrieve the employee data from the database using DAO (read-only, uses own connection)
+            // Retrieve the employee data from the database using DAO
             Employee employeeData = employeeDAO.getEmployeeByEmployeeNo(empToUpdate);
             if (employeeData == null) {
                 JOptionPane.showMessageDialog(this, "Employee not found!", "Update Employee", JOptionPane.WARNING_MESSAGE);
@@ -472,9 +468,6 @@ public class EmployeeData extends javax.swing.JFrame {
             
             // Display the UpdateEmployee frame
             updateEmployeeFrame.setVisible(true);
-            
-            // Optional: You might want to refresh the table here or when UpdateEmployee frame closes
-            // For now, it will only refresh on manual "Refresh" button click.
 
         } catch (SQLException ex) {
             LOGGER.log(Level.SEVERE, "Database error preparing for employee update: " + ex.getMessage(), ex);
@@ -484,8 +477,8 @@ public class EmployeeData extends javax.swing.JFrame {
 
     private void refreshButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshButtonActionPerformed
         try {
-            readData(null); // Refresh by loading all employees
-            employeeNo.setText(null); // Clear the search field
+            readData(null); 
+            employeeNo.setText(null); 
         } catch (SQLException ex) {
             LOGGER.log(Level.SEVERE, "Database error refreshing employee data", ex);
             JOptionPane.showMessageDialog(this, "Database error: " + ex.getMessage(), "Refresh Error", JOptionPane.ERROR_MESSAGE);

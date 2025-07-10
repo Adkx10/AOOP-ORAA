@@ -4,7 +4,7 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date; // Use java.util.Date consistently
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -21,8 +21,8 @@ import dao.LeaveRequestDAO;
 import dao.EmployeeDAO;
 import dao.LeaveTypeDAO;
 import java.util.Calendar;
-import data.DBConnection; // Import DBConnection
-import java.sql.Connection; // Import Connection
+import data.DBConnection;
+import java.sql.Connection;
 
 public class ViewRequest extends javax.swing.JFrame {
 
@@ -33,11 +33,9 @@ public class ViewRequest extends javax.swing.JFrame {
     private Employee currentUser;
     private LeaveRequestDAO leaveRequestDAO;
     private EmployeeDAO employeeDAO; // Used to get current user's FN/LN for submission
-    private LeaveTypeDAO leaveTypeDAO; // New: To get leave type IDs
+    private LeaveTypeDAO leaveTypeDAO; // To get leave type IDs
+    private List<LeaveRequest> displayedRequests = new ArrayList<>(); // To hold requests shown in the table
 
-    // JDateChooser instances are declared by NetBeans GUI Builder in initComponents()
-    // and are accessible as processRequestedDate and requestedDate.
-    // Removed processEndDate and requestEndDate.
     public ViewRequest() {
         this(null);
     }
@@ -50,7 +48,7 @@ public class ViewRequest extends javax.swing.JFrame {
         try {
             this.leaveRequestDAO = new LeaveRequestDAO();
             this.employeeDAO = new EmployeeDAO();
-            this.leaveTypeDAO = new LeaveTypeDAO(); // Initialize LeaveTypeDAO
+            this.leaveTypeDAO = new LeaveTypeDAO();
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Fatal Error: Failed to initialize DAOs in ViewRequest constructor.", e);
             JOptionPane.showMessageDialog(this,
@@ -59,9 +57,8 @@ public class ViewRequest extends javax.swing.JFrame {
                     "Initialization Error", JOptionPane.ERROR_MESSAGE);
         }
 
-        initComponents(); // Initialize GUI components and the JDateChooser variables
+        initComponents();
 
-        // Configure JDateChooser date format after initComponents()
         if (processRequestedDate != null) {
             processRequestedDate.setDateFormatString("yyyy-MM-dd");
         }
@@ -84,9 +81,8 @@ public class ViewRequest extends javax.swing.JFrame {
         showDate();
 
         try {
-            // readData now expects Date objects for filters
-            // Initial load for current user or all, no specific date filters
             readData(this.empNo, null);
+            readLeaveBalanceData(this.empNo);
         } catch (SQLException ex) {
             LOGGER.log(Level.SEVERE, "Database error initializing ViewRequest GUI data load", ex);
             JOptionPane.showMessageDialog(this, "Database error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -99,19 +95,6 @@ public class ViewRequest extends javax.swing.JFrame {
         jLabel4.setText(s.format(d));
     }
 
-    /**
-     * Reads leave request data from the database and populates the JTable. This
-     * is a read-only operation and uses DAOs that get their own connections.
-     *
-     * @param empNoToFilter The employee number to filter by (can be null for
-     * all).
-     * @param filterRequestedDate The requested date (java.util.Date) to filter
-     * by (can be null).
-     *
-     * @return true if any matching requests were found and displayed, false
-     * otherwise.
-     * @throws SQLException if a database access error occurs.
-     */
     public boolean readData(String empNoToFilter, Date filterRequestedDate) throws SQLException {
         boolean requestsFound = false;
         DefaultTableModel model = (DefaultTableModel) requestTable.getModel();
@@ -135,7 +118,7 @@ public class ViewRequest extends javax.swing.JFrame {
             Date normalizedFilterDate = normalizeDateToMidnight(filterRequestedDate);
 
             for (LeaveRequest req : requests) {
-                Date reqRequestedDate = req.getRequestedDate(); // Get the requested date from model
+                Date reqRequestedDate = req.getRequestedDate();
 
                 Date normalizedReqDate = (reqRequestedDate != null) ? normalizeDateToMidnight(reqRequestedDate) : null;
 
@@ -144,7 +127,7 @@ public class ViewRequest extends javax.swing.JFrame {
                 }
             }
         } else {
-            filteredRequests = requests; // No date filter, use all fetched requests
+            filteredRequests = requests;
         }
 
         for (LeaveRequest req : filteredRequests) {
@@ -176,24 +159,19 @@ public class ViewRequest extends javax.swing.JFrame {
         model.fireTableDataChanged();
         return requestsFound;
     }
-    
-    public void updateRequest(Connection conn, String empNo, Date requestedDate, String newStatus, String newRemarks) throws SQLException { // <-- Added Connection conn
+
+    public void updateRequest(Connection conn, String empNo, Date requestedDate, String newStatus, String newRemarks) throws SQLException {
         String approvedById = currentUser.getEmployeeNo();
 
         Date normalizedRequestedDate = normalizeDateToMidnight(requestedDate);
-        
-        // Update request status and remarks - PASS THE TRANSACTIONAL CONNECTION
+
         boolean success = leaveRequestDAO.updateLeaveRequestStatusAndRemarks(conn, empNo, normalizedRequestedDate, newStatus, newRemarks, approvedById); //
-        
+
         if (!success) {
             throw new SQLException("Failed to update request status. Request not found or database error.");
         }
 
         if ("Approved".equalsIgnoreCase(newStatus)) {
-            // Retrieve details of the approved request to deduct balance
-            // Note: This get operation might use its own connection. If it must be part of THIS transaction,
-            // the getLeaveRequestsByEmployeeNo method in LeaveRequestDAO would also need a `conn` parameter.
-            // For simplicity, we assume reads can get their own connection.
             List<LeaveRequest> requests = leaveRequestDAO.getLeaveRequestsByEmployeeNo(empNo);
             LeaveRequest approvedReq = null;
             for (LeaveRequest req : requests) {
@@ -205,12 +183,11 @@ public class ViewRequest extends javax.swing.JFrame {
             }
 
             if (approvedReq != null) {
-                // For a single-day leave, diffDays is always 1 (as per previous logic)
                 long diffDays = 1;
 
-                // Deduct leave balance - PASS THE TRANSACTIONAL CONNECTION
+                // Deduct leave balance
                 boolean deductionSuccess = leaveRequestDAO.deductLeaveBalance(
-                        conn, // Pass connection
+                        conn,
                         approvedReq.getEmployeeId(),
                         approvedReq.getLeaveTypeID(),
                         (double) diffDays
@@ -222,7 +199,24 @@ public class ViewRequest extends javax.swing.JFrame {
                 throw new SQLException("Approved request details not found for balance deduction.");
             }
         }
-        // Success message and table refresh are handled by the calling actionPerformed method after commit
+    }
+
+    private void readLeaveBalanceData(String empNoToFilter) throws SQLException {
+        DefaultTableModel model = (DefaultTableModel) leaveBalanceTable.getModel();
+        model.setRowCount(0);
+
+        if (empNoToFilter == null || empNoToFilter.isEmpty()) {
+            return;
+        }
+
+        List<LeaveRequest> balances = leaveRequestDAO.getLeaveBalancesByEmployeeNo(empNoToFilter);
+
+        for (LeaveRequest balance : balances) {
+            model.addRow(new Object[]{
+                balance.getLeaveTypeName(),
+                balance.getBalanceDays()
+            });
+        }
     }
 
     private Date normalizeDateToMidnight(Date date) {
@@ -240,25 +234,26 @@ public class ViewRequest extends javax.swing.JFrame {
 
     public void leaveProcessor() {
         // Elements for Request Leave (hide)
-        jLabel5.setVisible(false); // Leave Reason label
-        leaveReason.setVisible(false); // Leave Reason text field
-        requestedDate.setVisible(false); // Request Date JDateChooser
-        jLabel6.setVisible(false); // Type of Leave label
-        leaveType.setVisible(false); // Leave Type combo box
-        submitRequest.setVisible(false); // Submit button
-        refreshButton1.setVisible(false); // Refresh button
+        jLabel5.setVisible(false);
+        leaveReason.setVisible(false);
+        requestedDate.setVisible(false);
+        jLabel6.setVisible(false);
+        leaveType.setVisible(false);
+        submitRequest.setVisible(false);
+        refreshButton1.setVisible(false);
+        deleteRequest.setVisible(false);
 
         // Elements for Process Leave (show)
-        processRequestedDate.setVisible(true); // Process Requested Date JDateChooser
-        empNoField.setVisible(true); // Employee No. search field
-        jLabel1.setVisible(true); // "Enter Employee No." label
-        jLabel2.setText("Date:"); // Change label text to simply "Date:"
-        viewRequest.setVisible(true); // View button
-        refreshButton.setVisible(true); // Refresh button
-        approveRequest.setVisible(true); // Approve button
-        rejectRequest.setVisible(true); // Reject button
-        jScrollPane1.setVisible(true); // Table scroll pane
-        requestTable.setVisible(true); // Table
+        processRequestedDate.setVisible(true);
+        empNoField.setVisible(true);
+        jLabel1.setVisible(true);
+        jLabel2.setText("Date:");
+        viewRequest.setVisible(true);
+        refreshButton.setVisible(true);
+        approveRequest.setVisible(true);
+        rejectRequest.setVisible(true);
+        jScrollPane1.setVisible(true);
+        requestTable.setVisible(true);
     }
 
     public void leaveRequestor() {
@@ -275,13 +270,14 @@ public class ViewRequest extends javax.swing.JFrame {
         // Elements for Request Leave (show)
         jLabel5.setVisible(true);
         leaveReason.setVisible(true);
-        requestedDate.setVisible(true); // Request Date JDateChooser
+        requestedDate.setVisible(true);
         jLabel6.setVisible(true);
         leaveType.setVisible(true);
         submitRequest.setVisible(true);
         refreshButton1.setVisible(true);
-        jScrollPane1.setVisible(true); // Table scroll pane
+        jScrollPane1.setVisible(true);
         requestTable.setVisible(true);
+        deleteRequest.setVisible(true);
     }
 
     /**
@@ -297,8 +293,6 @@ public class ViewRequest extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        requestTable = new javax.swing.JTable();
         jPanel2 = new javax.swing.JPanel();
         empNoField = new javax.swing.JTextField();
         viewRequest = new javax.swing.JButton();
@@ -316,6 +310,12 @@ public class ViewRequest extends javax.swing.JFrame {
         refreshButton1 = new javax.swing.JButton();
         processRequestedDate = new com.toedter.calendar.JDateChooser();
         requestedDate = new com.toedter.calendar.JDateChooser();
+        deleteRequest = new javax.swing.JButton();
+        jTabbedPane1 = new javax.swing.JTabbedPane();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        requestTable = new javax.swing.JTable();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        leaveBalanceTable = new javax.swing.JTable();
 
         approveRequest1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         approveRequest1.setText("Approve");
@@ -345,7 +345,7 @@ public class ViewRequest extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel3)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 1178, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 1172, Short.MAX_VALUE)
                 .addComponent(jLabel4)
                 .addContainerGap())
         );
@@ -358,25 +358,6 @@ public class ViewRequest extends javax.swing.JFrame {
                     .addComponent(jLabel4))
                 .addContainerGap())
         );
-
-        requestTable.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-                "Employee #", "Last Name", "First Name", "Reason", "Type", "Requested Date", "Status", "Remarks", "Submission Date"
-            }
-        ) {
-            boolean[] canEdit = new boolean [] {
-                false, false, false, false, true, false, true, true, true
-            };
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        requestTable.getTableHeader().setReorderingAllowed(false);
-        jScrollPane1.setViewportView(requestTable);
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
 
@@ -456,32 +437,21 @@ public class ViewRequest extends javax.swing.JFrame {
         requestedDate.setDateFormatString("yyyy-MM-dd");
         requestedDate.setPreferredSize(new java.awt.Dimension(91, 22));
 
+        deleteRequest.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        deleteRequest.setText("Delete");
+        deleteRequest.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteRequestActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel2)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(rejectRequest, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(processRequestedDate, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 163, Short.MAX_VALUE)
-                            .addComponent(empNoField, javax.swing.GroupLayout.Alignment.LEADING))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(leaveReason, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(requestedDate, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(submitRequest, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(refreshButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(46, 46, 46))
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addGap(9, 9, 9)
-                                .addComponent(jLabel5))))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(approveRequest, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -491,16 +461,39 @@ public class ViewRequest extends javax.swing.JFrame {
                                 .addComponent(refreshButton, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addGap(7, 7, 7)
-                                .addComponent(leaveType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(jPanel2Layout.createSequentialGroup()
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(jLabel6))
+                                    .addGroup(jPanel2Layout.createSequentialGroup()
+                                        .addGap(7, 7, 7)
+                                        .addComponent(leaveType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addContainerGap(16, Short.MAX_VALUE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(refreshButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(deleteRequest, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(submitRequest, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel2)
                             .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jLabel6)))))
-                .addContainerGap())
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(backButton, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addComponent(rejectRequest, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(processRequestedDate, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 163, Short.MAX_VALUE)
+                                    .addComponent(empNoField, javax.swing.GroupLayout.Alignment.LEADING))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(leaveReason, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(requestedDate, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGroup(jPanel2Layout.createSequentialGroup()
+                                        .addGap(9, 9, 9)
+                                        .addComponent(jLabel5))))
+                            .addComponent(backButton, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
 
         jPanel2Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {approveRequest, refreshButton, rejectRequest, viewRequest});
@@ -522,26 +515,25 @@ public class ViewRequest extends javax.swing.JFrame {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(requestedDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(processRequestedDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(viewRequest)
-                            .addComponent(refreshButton, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel6))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(approveRequest)
-                            .addComponent(leaveType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(rejectRequest))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(56, 56, 56)
-                        .addComponent(submitRequest)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(refreshButton1)))
-                .addGap(123, 123, 123)
-                .addComponent(backButton))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(viewRequest)
+                    .addComponent(refreshButton, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel6))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(approveRequest)
+                    .addComponent(leaveType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(rejectRequest)
+                    .addComponent(submitRequest))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(refreshButton1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(deleteRequest)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 92, Short.MAX_VALUE)
+                .addComponent(backButton)
+                .addContainerGap())
         );
 
         jPanel2Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {refreshButton, viewRequest});
@@ -549,15 +541,61 @@ public class ViewRequest extends javax.swing.JFrame {
         requestedDate.getAccessibleContext().setAccessibleName("");
         requestedDate.getAccessibleContext().setAccessibleDescription("");
 
+        requestTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Employee #", "Last Name", "First Name", "Reason", "Type", "Requested Date", "Status", "Remarks", "Submission Date"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, true, false, true, true, true
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        requestTable.getTableHeader().setReorderingAllowed(false);
+        jScrollPane1.setViewportView(requestTable);
+
+        jTabbedPane1.addTab("Requests", jScrollPane1);
+
+        leaveBalanceTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Leave Type", "Balance Days"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.Integer.class
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+        });
+        leaveBalanceTable.getTableHeader().setReorderingAllowed(false);
+        jScrollPane2.setViewportView(leaveBalanceTable);
+
+        jTabbedPane1.addTab("Leave Balance", jScrollPane2);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 1302, Short.MAX_VALUE)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jTabbedPane1))
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 1296, Short.MAX_VALUE))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -565,8 +603,8 @@ public class ViewRequest extends javax.swing.JFrame {
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -581,14 +619,19 @@ public class ViewRequest extends javax.swing.JFrame {
     private void refreshButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshButton1ActionPerformed
         try {
             String currentEmpNo = currentUser.getEmployeeNo();
-            if (currentUser instanceof RegularEmployee) {
-                readData(currentEmpNo, null);
-            } else {
-                readData(null, null);
-            }
+            readData(currentEmpNo, null);
+            readLeaveBalanceData(currentEmpNo);
             leaveReason.setText("");
-            requestedDate.setDate(null); // Clear requestedDate
+            requestedDate.setDate(null);
             leaveType.setSelectedIndex(0);
+//            if (currentUser instanceof RegularEmployee) {
+//                readData(currentEmpNo, null);
+//            } else {
+//                readData(null, null);
+//            }
+//            leaveReason.setText("");
+//            requestedDate.setDate(null);
+//            leaveType.setSelectedIndex(0);
         } catch (SQLException ex) {
             LOGGER.log(Level.SEVERE, "Database error refreshing request panel for Regular Employee", ex);
             JOptionPane.showMessageDialog(this, "Database error: " + ex.getMessage(), "Refresh Error", JOptionPane.ERROR_MESSAGE);
@@ -596,10 +639,10 @@ public class ViewRequest extends javax.swing.JFrame {
     }//GEN-LAST:event_refreshButton1ActionPerformed
 
     private void submitRequestActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_submitRequestActionPerformed
-        Connection conn = null; // Declare connection for transaction
-        String empNoValue = currentUser.getEmployeeNo(); // Declare empNoValue here
+        Connection conn = null;
+        String empNoValue = currentUser.getEmployeeNo();
         try {
-            conn = DBConnection.getTransactionalConnection(); // Get transactional connection
+            conn = DBConnection.getTransactionalConnection();
 
             String empLeaveReason = leaveReason.getText().trim();
             Date selectedRequestedDate = requestedDate.getDate();
@@ -618,7 +661,7 @@ public class ViewRequest extends javax.swing.JFrame {
                 return;
             }
 
-            Employee currentEmpDetails = employeeDAO.getEmployeeByEmployeeNo(empNoValue); // Read-only, uses own connection
+            Employee currentEmpDetails = employeeDAO.getEmployeeByEmployeeNo(empNoValue);
             if (currentEmpDetails == null) {
                 JOptionPane.showMessageDialog(this, "Employee details not found in database. Cannot submit request.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
@@ -632,15 +675,15 @@ public class ViewRequest extends javax.swing.JFrame {
                     empLeaveStatus, empLeaveRemarks
             );
 
-            boolean success = leaveRequestDAO.submitLeaveRequest(conn, newRequest); // Pass connection
+            boolean success = leaveRequestDAO.submitLeaveRequest(conn, newRequest);
 
             if (success) {
-                conn.commit(); // Commit transaction on success
+                conn.commit();
                 JOptionPane.showMessageDialog(this, "Leave request submitted successfully.", "Leave Request", JOptionPane.INFORMATION_MESSAGE);
                 leaveReason.setText("");
-                requestedDate.setDate(null); // Clear requestedDate
+                requestedDate.setDate(null);
                 leaveType.setSelectedIndex(0);
-                readData(empNoValue, null); // Refresh table (read-only, uses own connection)
+                readData(empNoValue, null);
             } else {
                 conn.rollback(); // Rollback if DAO method returns false
                 JOptionPane.showMessageDialog(this, "Failed to submit leave request. Please check logs.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -658,7 +701,6 @@ public class ViewRequest extends javax.swing.JFrame {
             LOGGER.log(Level.SEVERE, "Database error submitting leave request for employee: " + empNoValue, ex);
             JOptionPane.showMessageDialog(this, "Database error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         } finally {
-            // Always close the connection
             if (conn != null) {
                 try {
                     conn.close();
@@ -677,9 +719,10 @@ public class ViewRequest extends javax.swing.JFrame {
 
     private void refreshButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshButtonActionPerformed
         try {
-            readData(null, null); // Read-only, uses own connection
+            readData(null, null);
+            readLeaveBalanceData(null);
             empNoField.setText(null);
-            processRequestedDate.setDate(null); // Clear processRequestedDate
+            processRequestedDate.setDate(null);
         } catch (SQLException ex) {
             LOGGER.log(Level.SEVERE, "Database error refreshing view panel", ex);
             JOptionPane.showMessageDialog(this, "Database error: " + ex.getMessage(), "Refresh Error", JOptionPane.ERROR_MESSAGE);
@@ -687,8 +730,8 @@ public class ViewRequest extends javax.swing.JFrame {
     }//GEN-LAST:event_refreshButtonActionPerformed
 
     private void rejectRequestActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rejectRequestActionPerformed
-        String targetEmpNo = empNoField.getText().trim(); // Declare targetEmpNo here
-        Date selectedRequestedDate = processRequestedDate.getDate(); // Declare selectedRequestedDate here
+        String targetEmpNo = empNoField.getText().trim();
+        Date selectedRequestedDate = processRequestedDate.getDate();
 
         if (targetEmpNo.isEmpty() || selectedRequestedDate == null) {
             JOptionPane.showMessageDialog(this, "Please enter both Employee # and Date to reject a request.", "Input Error", JOptionPane.WARNING_MESSAGE);
@@ -696,9 +739,9 @@ public class ViewRequest extends javax.swing.JFrame {
         }
 
         try {
-            // Read-only operations, can use DAOs that get their own connections
+
             Date normalizedSelectedDate = normalizeDateToMidnight(selectedRequestedDate);
-            
+
             List<LeaveRequest> empRequests = leaveRequestDAO.getLeaveRequestsByEmployeeNo(targetEmpNo);
             LeaveRequest foundRequest = null;
             for (LeaveRequest req : empRequests) {
@@ -713,8 +756,6 @@ public class ViewRequest extends javax.swing.JFrame {
             if (foundRequest == null) {
                 JOptionPane.showMessageDialog(this, "Request not found for this Employee # and Date!", "Search Request", JOptionPane.WARNING_MESSAGE);
             } else {
-                // Pass the RequestedDate (Date object) to Remarks
-                // Remarks GUI will handle its own transaction for updating the status and remarks.
                 Remarks remarks = new Remarks(targetEmpNo, normalizedSelectedDate, this);
                 remarks.setVisible(true);
             }
@@ -725,26 +766,24 @@ public class ViewRequest extends javax.swing.JFrame {
     }//GEN-LAST:event_rejectRequestActionPerformed
 
     private void approveRequestActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_approveRequestActionPerformed
-        Connection conn = null; // Declare connection for transaction
-        String targetEmpNo = empNoField.getText().trim(); // Declare targetEmpNo here
-        Date selectedRequestedDate = processRequestedDate.getDate(); // Declare selectedRequestedDate here
+        Connection conn = null;
+        String targetEmpNo = empNoField.getText().trim();
+        Date selectedRequestedDate = processRequestedDate.getDate();
 
         try {
-            conn = DBConnection.getTransactionalConnection(); // Get transactional connection
+            conn = DBConnection.getTransactionalConnection();
 
             if (targetEmpNo.isEmpty() || selectedRequestedDate == null) {
                 JOptionPane.showMessageDialog(this, "Please enter both Employee # and Date to approve a request.", "Input Error", JOptionPane.WARNING_MESSAGE);
-                conn.rollback(); // Rollback if input is invalid (nothing to commit yet, but safe)
+                conn.rollback(); 
                 return;
             }
 
-            // Read-only operations, can use DAOs that get their own connections
             Date normalizedSelectedDate = normalizeDateToMidnight(selectedRequestedDate);
-            
+
             List<LeaveRequest> empRequests = leaveRequestDAO.getLeaveRequestsByEmployeeNo(targetEmpNo);
             LeaveRequest foundRequest = null;
             for (LeaveRequest req : empRequests) {
-                // Find the exact request by EmployeeID and RequestedDate
                 Date reqNormalizedDate = (req.getRequestedDate() != null) ? normalizeDateToMidnight(req.getRequestedDate()) : null;
                 if (reqNormalizedDate != null && reqNormalizedDate.equals(normalizedSelectedDate)) {
                     foundRequest = req;
@@ -754,21 +793,20 @@ public class ViewRequest extends javax.swing.JFrame {
 
             if (foundRequest == null) {
                 JOptionPane.showMessageDialog(this, "Request not found for this Employee # and Date!", "Search Request", JOptionPane.WARNING_MESSAGE);
-                conn.rollback(); // No request found, rollback
+                conn.rollback(); 
                 return;
             } else {
                 String newStatus = "Approved";
                 String newRemarks = "Approved by " + currentUser.getEmployeeNo();
 
-                // Call updateRequest to perform transactional update and deduction
-                updateRequest(conn, targetEmpNo, normalizedSelectedDate, newStatus, newRemarks); // Pass connection
-                
-                conn.commit(); // Commit transaction if updateRequest completes successfully
+                updateRequest(conn, targetEmpNo, normalizedSelectedDate, newStatus, newRemarks);
+
+                conn.commit(); 
                 JOptionPane.showMessageDialog(this, "Request approved and leave balance updated successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
-                readData(null, null); // Refresh table (read-only, uses own connection)
+                readData(null, null);
             }
         } catch (SQLException ex) {
-            // Rollback on any SQL error
+           
             if (conn != null) {
                 try {
                     conn.rollback();
@@ -780,7 +818,6 @@ public class ViewRequest extends javax.swing.JFrame {
             LOGGER.log(Level.SEVERE, "Database error approving request for employee: " + targetEmpNo + " on date: " + selectedRequestedDate, ex);
             JOptionPane.showMessageDialog(this, "Database error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         } finally {
-            // Always close the connection
             if (conn != null) {
                 try {
                     conn.close();
@@ -795,10 +832,6 @@ public class ViewRequest extends javax.swing.JFrame {
     private void viewRequestActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewRequestActionPerformed
         String targetEmpNo = empNoField.getText().trim();
         Date filterRequestedDate = processRequestedDate.getDate();
-        System.out.println(targetEmpNo);
-        System.out.println(filterRequestedDate);
-        // Since EndDate column is removed, filterEndDate will be the same as filterRequestedDate for filtering logic.
-        
         Date normalizedFilterDate = normalizeDateToMidnight(filterRequestedDate);
 
         if (targetEmpNo.isEmpty() && normalizedFilterDate == null) {
@@ -807,7 +840,9 @@ public class ViewRequest extends javax.swing.JFrame {
         }
 
         try {
-            readData(targetEmpNo.isEmpty() ? null : targetEmpNo, normalizedFilterDate); // Read-only, uses own connection
+            String empToSearch = targetEmpNo.isEmpty() ? null : targetEmpNo;
+            readData(empToSearch, normalizedFilterDate);
+            readLeaveBalanceData(empToSearch);
             if (requestTable.getModel().getRowCount() == 0) {
                 JOptionPane.showMessageDialog(this, "No requests found matching your search criteria!", "Search Request", JOptionPane.WARNING_MESSAGE);
             }
@@ -816,6 +851,42 @@ public class ViewRequest extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Database error: " + ex.getMessage(), "Search Error", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_viewRequestActionPerformed
+
+    private void deleteRequestActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteRequestActionPerformed
+        Date dateToDelete = requestedDate.getDate();
+
+        if (dateToDelete == null) {
+            JOptionPane.showMessageDialog(this, "Please select the date of the request you wish to delete.", "No Date Selected", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        String employeeId = currentUser.getEmployeeNo();
+        Date normalizedDate = normalizeDateToMidnight(dateToDelete);
+
+        int confirm = JOptionPane.showConfirmDialog(
+                this,
+                "Are you sure you want to delete the leave request for " + new SimpleDateFormat("yyyy-MM-dd").format(normalizedDate) + "?",
+                "Confirm Deletion",
+                JOptionPane.YES_NO_OPTION
+        );
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            try {
+                boolean success = leaveRequestDAO.deleteLeaveRequest(employeeId, normalizedDate);
+
+                if (success) {
+                    JOptionPane.showMessageDialog(this, "Leave request deleted successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+                    readData(employeeId, null);
+                    requestedDate.setDate(null);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Failed to delete the request.\nIt might not exist or has already been processed.", "Deletion Failed", JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (SQLException ex) {
+                LOGGER.log(Level.SEVERE, "Database error during leave request deletion.", ex);
+                JOptionPane.showMessageDialog(this, "A database error occurred. Please try again.", "Database Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }//GEN-LAST:event_deleteRequestActionPerformed
     public Employee getCurrentUser() { // Added getter for currentUser for Remarks.java
         return currentUser;
     }
@@ -823,6 +894,7 @@ public class ViewRequest extends javax.swing.JFrame {
     private javax.swing.JButton approveRequest;
     private javax.swing.JButton approveRequest1;
     private javax.swing.JButton backButton;
+    private javax.swing.JButton deleteRequest;
     private javax.swing.JTextField empNoField;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -833,6 +905,9 @@ public class ViewRequest extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JTable leaveBalanceTable;
     private javax.swing.JTextField leaveReason;
     private javax.swing.JComboBox<String> leaveType;
     private com.toedter.calendar.JDateChooser processRequestedDate;

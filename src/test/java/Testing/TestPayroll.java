@@ -165,7 +165,7 @@ public class TestPayroll {
                  PreparedStatement pstmtTaxComputation = conn.prepareStatement("DELETE FROM taxcomputation WHERE PayslipID IN (SELECT PayslipID FROM payslip WHERE EmployeeID = ?)");
                  PreparedStatement pstmtDeduction = conn.prepareStatement("DELETE FROM deduction WHERE EmployeeID = ?");
                  PreparedStatement pstmtPayslip = conn.prepareStatement("DELETE FROM payslip WHERE EmployeeID = ?");
-                 PreparedStatement pstmtPayPeriod = conn.prepareStatement("DELETE FROM payperiod");
+                 PreparedStatement pstmtPayPeriod = conn.prepareStatement("DELETE FROM payperiod WHERE PeriodName LIKE '%-TEST'"); // Only delete PeriodName with the '-TEST' suffix from 'payperiod' table to only remove test data.
                  PreparedStatement pstmtAllowance = conn.prepareStatement("DELETE FROM allowance WHERE EmployeeID = ?");
                  PreparedStatement pstmtSalary = conn.prepareStatement("DELETE FROM salary WHERE EmployeeID = ?");
                  PreparedStatement pstmtEmployee = conn.prepareStatement("DELETE FROM employee WHERE EmployeeID = ?");
@@ -251,7 +251,7 @@ public class TestPayroll {
     @Order(1)
     @DisplayName("Test Payroll Calculation - Single Employee with Regular Hours and Allowances")
     void testCalculatePayroll_SingleEmployeeRegularHoursAndAllowances() throws SQLException {
-        String periodName = "AUGUST 1-31, 2025";
+        String periodName = "AUGUST 1-31, 2025-TEST";
         LocalDate startDate = LocalDate.of(2025, 8, 1);
         LocalDate endDate = LocalDate.of(2025, 8, 31);
         int employeeId = SINGLE_TEST_EMPLOYEE_ID;
@@ -278,7 +278,7 @@ public class TestPayroll {
     @Order(2)
     @DisplayName("Test Payroll Calculation - Period Already Processed")
     void testCalculatePayroll_PeriodAlreadyProcessed() throws SQLException {
-        String periodName = "SEPTEMBER 1-30, 2025";
+        String periodName = "SEPTEMBER 1-30, 2025-TEST";
         LocalDate startDate = LocalDate.of(2025, 9, 1);
         LocalDate endDate = LocalDate.of(2025, 9, 30);
 
@@ -309,12 +309,11 @@ public class TestPayroll {
     @Order(3)
     @DisplayName("Test Payroll Calculation - Single Employee with Zero Hours")
     void testCalculatePayroll_SingleEmployeeWithZeroHours() throws SQLException {
-        String periodName = "OCTOBER 1-31, 2025";
+        String periodName = "OCTOBER 1-31, 2025-TEST";
         LocalDate startDate = LocalDate.of(2025, 10, 1);
         LocalDate endDate = LocalDate.of(2025, 10, 31);
         int employeeId = SINGLE_TEST_EMPLOYEE_ID;
 
-        // No attendance is inserted for this period.
 
         payrollDAO.calculatePayroll(periodName, startDate, endDate);
 
@@ -342,7 +341,7 @@ public class TestPayroll {
     @Order(4)
     @DisplayName("Test Payroll Calculation - Single Employee with Overtime")
     void testCalculatePayroll_SingleEmployeeOvertimeHours() throws SQLException {
-        String periodName = "NOVEMBER 1-30, 2025";
+        String periodName = "NOVEMBER 1-30, 2025-TEST";
         LocalDate startDate = LocalDate.of(2025, 11, 1);
         LocalDate endDate = LocalDate.of(2025, 11, 30);
         int employeeId = SINGLE_TEST_EMPLOYEE_ID;
@@ -367,7 +366,7 @@ public class TestPayroll {
     @Order(5)
     @DisplayName("Test Payroll Calculation - Existing Partial Data Cleared")
     void testCalculatePayroll_ExistingPartialDataCleared() throws SQLException {
-        String periodName = "DECEMBER 1-31, 2025";
+        String periodName = "DECEMBER 1-31, 2025-TEST";
         LocalDate startDate = LocalDate.of(2025, 12, 1);
         LocalDate endDate = LocalDate.of(2025, 12, 31);
         int employeeId = SINGLE_TEST_EMPLOYEE_ID;
@@ -423,7 +422,7 @@ public class TestPayroll {
     }
 }
 
-
+//FOR MANUAL INPUT TESTING
 
 //package Testing;
 //

@@ -1,12 +1,14 @@
 package model;
 
-import gui.*; // Imports all GUI classes
-import java.sql.SQLException; // Import for database-related exceptions
+import gui.EmployeeData;
+import gui.HomePage;
+import gui.ViewRequest;
+import gui.ViewSalary;
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-// Removed all CSV-related imports (com.opencsv.*, java.io.*)
 
 public class Manager extends Employee implements DataReader {
 
@@ -17,7 +19,7 @@ public class Manager extends Employee implements DataReader {
         super("", "", "", "", null, "", "", "", "", "", "", "", "", 0.0);
     }
 
-    // For login (sets employeeNo, then data can be read from DB if needed)
+    // For login (sets employeeNo)
     public Manager(String employeeNo) {
         super(employeeNo);
     }

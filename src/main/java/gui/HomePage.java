@@ -37,8 +37,7 @@ public class HomePage extends javax.swing.JFrame {
     private JPanel buttonPanel;
     private JPanel centerPanel;
 
-    // Constructor updated to handle SQLException, as GUI frames might throw it now
-    public HomePage(Employee user) { // Removed throws IOException, CsvValidationException
+    public HomePage(Employee user) {
         this.currentUser = user;
         initComponents();
         initializeUI();
@@ -113,8 +112,6 @@ public class HomePage extends javax.swing.JFrame {
             if (currentUser instanceof Admin admin) {
                 admin.viewSalary();
             } else if (currentUser instanceof Manager manager) {
-                // This logic seems a bit redundant if manager.viewSalary() already opens the frame
-                // and handles currentUser. I'll defer to the abstract method call.
                 manager.viewSalary();
             }
             this.dispose();
@@ -141,12 +138,9 @@ public class HomePage extends javax.swing.JFrame {
         //Regular Employee
         requestLeaveBtn.addActionListener(e -> {
             if (currentUser instanceof RegularEmployee regular) {
-                // The direct instantiation of ViewRequest(this) is okay if its constructor
-                // does not throw SQLException or handles it internally.
-                // However, the abstract method call is preferred for consistency.
                 regular.processLeaveRequest();
                 this.dispose();
-            } // Catch SQLException as processLeaveRequest can throw it
+            }
         });
 
         //Regular Employee
@@ -275,10 +269,10 @@ public class HomePage extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void logoutButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logoutButtonActionPerformed
-        // Assuming LogInPage does not throw SQLException or handles it internally
+
         LogInPage login = new LogInPage();
-        login.setVisible(true); // Ensure login page is made visible
-        this.dispose(); // Close the current home page frame
+        login.setVisible(true); 
+        this.dispose();
     }//GEN-LAST:event_logoutButtonActionPerformed
 
 

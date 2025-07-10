@@ -1,0 +1,224 @@
+<!-- Created with Jaspersoft Studio version 7.0.3.final using JasperReports Library version 7.0.3-41034ca841d452f3305ba55b9042260aaa1ab5dd  -->
+<jasperReport name="AnnualGovContributionReport" language="java" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="8b254d3f-a505-4b70-a8d1-5fb2029f4aac">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="New AOOP MotorPH Adapter"/>
+	<style name="Row">
+		<conditionalStyle backcolor="#E0E0E0">
+			<conditionExpression><![CDATA[$V{REPORT_COUNT}%2 == 0]]></conditionExpression>
+		</conditionalStyle>
+	</style>
+	<parameter name="EmployeeID" class="java.lang.Integer"/>
+	<parameter name="Year" class="java.lang.Integer"/>
+	<query language="SQL"><![CDATA[SELECT *
+FROM payrollsystem_db.monthly_payroll_summary_report
+WHERE `Employee No` = $P{EmployeeID} and YEAR(StartDate) = $P{Year};]]></query>
+	<field name="Employee No" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="Employee No"/>
+		<property name="com.jaspersoft.studio.field.label" value="Employee No"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="monthly_payroll_summary_report"/>
+	</field>
+	<field name="Employee Full Name" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="Employee Full Name"/>
+		<property name="com.jaspersoft.studio.field.label" value="Employee Full Name"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="monthly_payroll_summary_report"/>
+	</field>
+	<field name="Position" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="Position"/>
+		<property name="com.jaspersoft.studio.field.label" value="Position"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="monthly_payroll_summary_report"/>
+	</field>
+	<field name="Department" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="Department"/>
+		<property name="com.jaspersoft.studio.field.label" value="Department"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="monthly_payroll_summary_report"/>
+	</field>
+	<field name="Gross Income" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="Gross Income"/>
+		<property name="com.jaspersoft.studio.field.label" value="Gross Income"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="monthly_payroll_summary_report"/>
+	</field>
+	<field name="Net Pay" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="Net Pay"/>
+		<property name="com.jaspersoft.studio.field.label" value="Net Pay"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="monthly_payroll_summary_report"/>
+	</field>
+	<field name="Social Security No." class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="Social Security No."/>
+		<property name="com.jaspersoft.studio.field.label" value="Social Security No."/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="monthly_payroll_summary_report"/>
+	</field>
+	<field name="Social Security Contribution" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="Social Security Contribution"/>
+		<property name="com.jaspersoft.studio.field.label" value="Social Security Contribution"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="monthly_payroll_summary_report"/>
+	</field>
+	<field name="Philhealth No." class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="Philhealth No."/>
+		<property name="com.jaspersoft.studio.field.label" value="Philhealth No."/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="monthly_payroll_summary_report"/>
+	</field>
+	<field name="Philhealth Contribution" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="Philhealth Contribution"/>
+		<property name="com.jaspersoft.studio.field.label" value="Philhealth Contribution"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="monthly_payroll_summary_report"/>
+	</field>
+	<field name="Pag-ibig No." class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="Pag-ibig No."/>
+		<property name="com.jaspersoft.studio.field.label" value="Pag-ibig No."/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="monthly_payroll_summary_report"/>
+	</field>
+	<field name="Pag-ibig Contribution" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="Pag-ibig Contribution"/>
+		<property name="com.jaspersoft.studio.field.label" value="Pag-ibig Contribution"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="monthly_payroll_summary_report"/>
+	</field>
+	<field name="TIN" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="TIN"/>
+		<property name="com.jaspersoft.studio.field.label" value="TIN"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="monthly_payroll_summary_report"/>
+	</field>
+	<field name="Withholding Tax" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="Withholding Tax"/>
+		<property name="com.jaspersoft.studio.field.label" value="Withholding Tax"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="monthly_payroll_summary_report"/>
+	</field>
+	<field name="StartDate" class="java.sql.Date">
+		<property name="com.jaspersoft.studio.field.name" value="StartDate"/>
+		<property name="com.jaspersoft.studio.field.label" value="StartDate"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="monthly_payroll_summary_report"/>
+	</field>
+	<field name="EndDate" class="java.sql.Date">
+		<property name="com.jaspersoft.studio.field.name" value="EndDate"/>
+		<property name="com.jaspersoft.studio.field.label" value="EndDate"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="monthly_payroll_summary_report"/>
+	</field>
+	<variable name="TotalSSS" calculation="Sum" class="java.lang.Double">
+		<expression><![CDATA[$F{Social Security Contribution}]]></expression>
+	</variable>
+	<variable name="TotalPhilhealth" calculation="Sum" class="java.lang.Double">
+		<expression><![CDATA[$F{Philhealth Contribution}]]></expression>
+	</variable>
+	<variable name="TotalPagibig" calculation="Sum" class="java.lang.Double">
+		<expression><![CDATA[$F{Pag-ibig Contribution}]]></expression>
+	</variable>
+	<variable name="TotalTax" calculation="Sum" class="java.lang.Double">
+		<expression><![CDATA[$F{Withholding Tax}]]></expression>
+	</variable>
+	<pageHeader height="160" splitType="Stretch">
+		<element kind="image" uuid="1a2f0a70-7fab-4826-9abf-e6e0cae84057" x="0" y="0" width="110" height="90" hImageAlign="Center" vImageAlign="Middle">
+			<expression><![CDATA["C:/Users/user/OneDrive/Pictures/Screenshots/Screenshot 2025-07-08 181750.png"]]></expression>
+		</element>
+		<element kind="staticText" uuid="d6ef2316-1055-4559-9e65-c9b17d89c0ee" x="130" y="10" width="160" height="34" forecolor="#000066" fontSize="22.0" italic="true" bold="true">
+			<text><![CDATA[MotorPH]]></text>
+		</element>
+		<element kind="staticText" uuid="1c2eb2a3-3ade-4e4d-a05a-bcbf35eccf09" x="130" y="44" width="310" height="36" forecolor="#000066" fontSize="8.0">
+			<paragraph lineSpacingSize="2.0"/>
+			<text><![CDATA[7 Jupiter Avenue cor. F. Sandoval Jr., Bagong Nayon, Quezon City
+Phone: (028) 911-5071 / (028) 911-5072 / (028) 911-5073
+Email: corporate@motorph.com			]]></text>
+		</element>
+		<element kind="staticText" uuid="4abeba2c-a075-41cf-ab67-55a94ad5a426" x="0" y="90" width="300" height="20" forecolor="#000066" bold="true" hTextAlign="Left" vTextAlign="Middle">
+			<text><![CDATA[ANNUAL GOVERNMENT CONTRIBUTION SUMMARY REPORT]]></text>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+		</element>
+		<element kind="staticText" uuid="ce8e5cf2-a48e-430f-adcd-87a04614cb7f" mode="Opaque" x="0" y="110" width="100" height="30" forecolor="#FFFFFF" backcolor="#000066" fontSize="8.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Employee No]]></text>
+			<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="37387bf7-a520-4078-a290-3dffc7a0ff68"/>
+		</element>
+		<element kind="staticText" uuid="f8b2104a-83ec-42b2-bc9b-7c7e8535efc4" mode="Opaque" x="100" y="110" width="150" height="30" forecolor="#FFFFFF" backcolor="#000066" fontSize="8.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Employee Full Name]]></text>
+			<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="0926c963-7cc8-425b-a21d-7d8260e1ad6e"/>
+		</element>
+		<element kind="textField" uuid="4634a438-c086-4883-a795-d31d2a89cc32" x="0" y="140" width="100" height="20" hTextAlign="Center" vTextAlign="Middle">
+			<expression><![CDATA[$F{Employee No}]]></expression>
+			<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="37387bf7-a520-4078-a290-3dffc7a0ff68"/>
+		</element>
+		<element kind="textField" uuid="2b290a9b-93ca-4d47-9c75-e5df0b094289" x="100" y="140" width="150" height="20" hTextAlign="Center" vTextAlign="Middle">
+			<expression><![CDATA[$F{Employee Full Name}]]></expression>
+			<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="0926c963-7cc8-425b-a21d-7d8260e1ad6e"/>
+		</element>
+	</pageHeader>
+	<columnHeader height="30" splitType="Stretch">
+		<element kind="staticText" uuid="1a0ec29f-ae13-470d-93e1-fdc6971a3ee6" mode="Opaque" x="57" y="0" width="57" height="30" forecolor="#FFFFFF" backcolor="#000066" fontSize="8.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[EndDate]]></text>
+			<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="a13b1a32-8c23-4e4b-a9f2-9a1309828c03"/>
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+			<property name="com.jaspersoft.studio.unit.width" value="px"/>
+		</element>
+		<element kind="staticText" uuid="364c4fc7-18d3-474b-8bdd-486ec79e8e7e" mode="Opaque" x="334" y="0" width="110" height="30" forecolor="#FFFFFF" backcolor="#000066" fontSize="8.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Pag-ibig Contribution]]></text>
+			<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="50982906-dc02-496c-8e0d-029666ee8bfa"/>
+		</element>
+		<element kind="staticText" uuid="144e59f2-cb0f-48f1-9e8b-f7b7ed051f63" mode="Opaque" x="444" y="0" width="110" height="30" forecolor="#FFFFFF" backcolor="#000066" fontSize="8.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Withholding Tax]]></text>
+			<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="50982906-dc02-496c-8e0d-029666ee8bfa"/>
+		</element>
+		<element kind="staticText" uuid="0f650440-d9e4-48af-a6cc-b57a91e45863" mode="Opaque" x="114" y="0" width="110" height="30" forecolor="#FFFFFF" backcolor="#000066" fontSize="8.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Social Security Contribution]]></text>
+			<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="50982906-dc02-496c-8e0d-029666ee8bfa"/>
+		</element>
+		<element kind="staticText" uuid="90efda7f-6fe9-4e60-86b6-eaec0e0d754e" mode="Opaque" x="0" y="0" width="57" height="30" forecolor="#FFFFFF" backcolor="#000066" fontSize="8.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[StartDate]]></text>
+			<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="84d0540b-d160-4923-b745-fc7a3d1d6563"/>
+			<property name="com.jaspersoft.studio.unit.width" value="px"/>
+		</element>
+		<element kind="staticText" uuid="5cb07e15-45b4-42e0-acb4-6cbd6d494756" mode="Opaque" x="224" y="0" width="110" height="30" forecolor="#FFFFFF" backcolor="#000066" fontSize="8.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Philhealth Contribution]]></text>
+			<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="50982906-dc02-496c-8e0d-029666ee8bfa"/>
+		</element>
+	</columnHeader>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<element kind="frame" uuid="7be5dd25-6d7a-458e-a8dc-2e0f66ee68b9" mode="Opaque" x="0" y="0" width="554" height="20" style="Row">
+				<element kind="textField" uuid="3a6f2d8d-67e8-4238-b036-5c02ad6632fb" x="0" y="0" width="57" height="20" pattern="M/d/yy" hTextAlign="Center" vTextAlign="Middle">
+					<expression><![CDATA[$F{StartDate}]]></expression>
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="84d0540b-d160-4923-b745-fc7a3d1d6563"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</element>
+				<element kind="textField" uuid="1bc1d437-3652-47de-b85d-b31b3ccf0927" x="114" y="0" width="110" height="20" pattern="P#,##0.00#;#,##0.00#-" hTextAlign="Right" vTextAlign="Middle">
+					<expression><![CDATA[$F{Social Security Contribution}]]></expression>
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="50982906-dc02-496c-8e0d-029666ee8bfa"/>
+				</element>
+				<element kind="textField" uuid="b45b46b8-9b3b-4d94-9200-01c8e20397d5" x="334" y="0" width="110" height="20" pattern="P#,##0.00#;#,##0.00#-" hTextAlign="Right" vTextAlign="Middle">
+					<expression><![CDATA[$F{Pag-ibig Contribution}]]></expression>
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="0baf9d6b-6ea5-4588-897b-18f3dde9cc6c"/>
+				</element>
+				<element kind="textField" uuid="daca6f0e-74f8-42c5-bfc9-119dba572953" x="444" y="0" width="110" height="20" pattern="P#,##0.00#;#,##0.00#-" hTextAlign="Right" vTextAlign="Middle">
+					<expression><![CDATA[$F{Withholding Tax}]]></expression>
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="152241f2-0113-49c5-b572-1f5c1b71009f"/>
+				</element>
+				<element kind="textField" uuid="06741b7d-4a88-4dfb-9d45-5f1eef6576f9" x="57" y="0" width="57" height="20" pattern="M/d/yy" hTextAlign="Center" vTextAlign="Middle">
+					<expression><![CDATA[$F{EndDate}]]></expression>
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="a13b1a32-8c23-4e4b-a9f2-9a1309828c03"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</element>
+				<element kind="textField" uuid="f79779f0-701e-4d80-aa3f-b7eb2ec60a7e" x="224" y="0" width="110" height="20" pattern="P#,##0.00#;#,##0.00#-" hTextAlign="Right" vTextAlign="Middle">
+					<expression><![CDATA[$F{Philhealth Contribution}]]></expression>
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="c786f1da-3e6a-4021-9038-b0f934e759eb"/>
+				</element>
+			</element>
+		</band>
+	</detail>
+	<summary height="20">
+		<element kind="frame" uuid="0afb456e-3a3a-4760-861b-62dd22fde8b7" x="0" y="0" width="554" height="20">
+			<element kind="staticText" uuid="a16bc0db-dd4d-4c58-9161-a81a2f347497" x="0" y="0" width="114" height="20" hTextAlign="Left" vTextAlign="Middle">
+				<paragraph leftIndent="5"/>
+				<text><![CDATA[Total]]></text>
+				<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+			</element>
+			<element kind="textField" uuid="bbb7f615-782b-4596-b470-3ffe55b28afe" x="114" y="0" width="110" height="20" pattern="P#,##0.00#;#,##0.00#-" hTextAlign="Right" vTextAlign="Middle">
+				<expression><![CDATA[$V{TotalSSS}]]></expression>
+			</element>
+			<element kind="textField" uuid="4c3c7c96-6df6-4c18-a794-21d2a98309a6" x="224" y="0" width="110" height="20" pattern="P#,##0.00#;#,##0.00#-" bold="false" hTextAlign="Right" vTextAlign="Middle">
+				<expression><![CDATA[$V{TotalPhilhealth}]]></expression>
+			</element>
+			<element kind="textField" uuid="20b6604f-d16c-4179-8172-fe772c595472" x="334" y="0" width="110" height="20" pattern="P#,##0.00#;#,##0.00#-" hTextAlign="Right" vTextAlign="Middle">
+				<expression><![CDATA[$V{TotalPagibig}]]></expression>
+			</element>
+			<element kind="textField" uuid="7e118cd3-b271-47b8-9504-ae7843067997" x="444" y="0" width="110" height="20" pattern="P#,##0.00#;#,##0.00#-" hTextAlign="Right" vTextAlign="Middle">
+				<expression><![CDATA[$V{TotalTax}]]></expression>
+			</element>
+			<element kind="line" uuid="3c131b0a-c177-46e4-9373-54bbdd7fb6da" x="0" y="0" width="553" height="1"/>
+		</element>
+	</summary>
+</jasperReport>

@@ -1,0 +1,539 @@
+<!-- Created with Jaspersoft Studio version 7.0.3.final using JasperReports Library version 7.0.3-41034ca841d452f3305ba55b9042260aaa1ab5dd  -->
+<jasperReport name="PayslipGenerated" language="java" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="d27e026e-7504-4eb4-9c7d-755ede93d675">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="New AOOP MotorPH Adapter"/>
+	<style name="Table_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table 1_CH" mode="Opaque" backcolor="#CFDBE6">
+		<box>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<parameter name="EmployeeID" class="java.lang.Integer">
+		<description><![CDATA[EmployeeID]]></description>
+	</parameter>
+	<parameter name="Month" class="java.lang.Integer">
+		<description><![CDATA[Month of the Payperiod]]></description>
+	</parameter>
+	<parameter name="Year" class="java.lang.Integer">
+		<description><![CDATA[Year of the payperiod]]></description>
+	</parameter>
+	<query language="SQL"><![CDATA[SELECT * 
+FROM payrollsystem_db.payslip_generation
+WHERE `Employee ID` = $P{EmployeeID} 
+  AND MONTH(`Period Start Date`) = $P{Month}
+  AND YEAR(`Period Start Date`) = $P{Year};]]></query>
+	<field name="Payslip No" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="Payslip No"/>
+		<property name="com.jaspersoft.studio.field.label" value="Payslip No"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="payslip"/>
+	</field>
+	<field name="Employee ID" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="Employee ID"/>
+		<property name="com.jaspersoft.studio.field.label" value="Employee ID"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="employee"/>
+	</field>
+	<field name="Employee Name" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="Employee Name"/>
+		<property name="com.jaspersoft.studio.field.label" value="Employee Name"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="payslip_generation"/>
+	</field>
+	<field name="Period Start Date" class="java.sql.Date">
+		<property name="com.jaspersoft.studio.field.name" value="Period Start Date"/>
+		<property name="com.jaspersoft.studio.field.label" value="Period Start Date"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="payperiod"/>
+	</field>
+	<field name="Period End Date" class="java.sql.Date">
+		<property name="com.jaspersoft.studio.field.name" value="Period End Date"/>
+		<property name="com.jaspersoft.studio.field.label" value="Period End Date"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="payperiod"/>
+	</field>
+	<field name="Employee Position" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="Employee Position"/>
+		<property name="com.jaspersoft.studio.field.label" value="Employee Position"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="position"/>
+	</field>
+	<field name="Monthly Rate" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="Monthly Rate"/>
+		<property name="com.jaspersoft.studio.field.label" value="Monthly Rate"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="payslip_generation"/>
+	</field>
+	<field name="Daily Rate" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="Daily Rate"/>
+		<property name="com.jaspersoft.studio.field.label" value="Daily Rate"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="payslip_generation"/>
+	</field>
+	<field name="Days Worked" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="Days Worked"/>
+		<property name="com.jaspersoft.studio.field.label" value="Days Worked"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="payslip_generation"/>
+	</field>
+	<field name="Overtime" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="Overtime"/>
+		<property name="com.jaspersoft.studio.field.label" value="Overtime"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="payslip_generation"/>
+	</field>
+	<field name="Gross Income" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="Gross Income"/>
+		<property name="com.jaspersoft.studio.field.label" value="Gross Income"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="payslip"/>
+	</field>
+	<field name="Rice Subsidy" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="Rice Subsidy"/>
+		<property name="com.jaspersoft.studio.field.label" value="Rice Subsidy"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="payslip_generation"/>
+	</field>
+	<field name="Phone Allowance" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="Phone Allowance"/>
+		<property name="com.jaspersoft.studio.field.label" value="Phone Allowance"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="payslip_generation"/>
+	</field>
+	<field name="Clothing Allowance" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="Clothing Allowance"/>
+		<property name="com.jaspersoft.studio.field.label" value="Clothing Allowance"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="payslip_generation"/>
+	</field>
+	<field name="Total Benefits" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="Total Benefits"/>
+		<property name="com.jaspersoft.studio.field.label" value="Total Benefits"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="payslip"/>
+	</field>
+	<field name="Social Security System" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="Social Security System"/>
+		<property name="com.jaspersoft.studio.field.label" value="Social Security System"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="payslip_generation"/>
+	</field>
+	<field name="Philhealth" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="Philhealth"/>
+		<property name="com.jaspersoft.studio.field.label" value="Philhealth"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="payslip_generation"/>
+	</field>
+	<field name="Pag-Ibig" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="Pag-Ibig"/>
+		<property name="com.jaspersoft.studio.field.label" value="Pag-Ibig"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="payslip_generation"/>
+	</field>
+	<field name="Withholding Tax" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="Withholding Tax"/>
+		<property name="com.jaspersoft.studio.field.label" value="Withholding Tax"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="payslip_generation"/>
+	</field>
+	<field name="Total Deductions" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="Total Deductions"/>
+		<property name="com.jaspersoft.studio.field.label" value="Total Deductions"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="payslip"/>
+	</field>
+	<field name="Take Home Pay" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="Take Home Pay"/>
+		<property name="com.jaspersoft.studio.field.label" value="Take Home Pay"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="payslip"/>
+	</field>
+	<pageHeader height="170">
+		<element kind="staticText" uuid="91582278-0ec6-4e63-8eec-c81eb5c9d922" x="200" y="50" width="310" height="40" forecolor="#000066" fontSize="10.0">
+			<text><![CDATA[7 Jupiter Avenue cor. F. Sandoval Jr., Bagong Nayon, Quezon City
+Phone: (028) 911-5071 / (028) 911-5072 / (028) 911-5073
+Email: corporate@motorph.com			]]></text>
+		</element>
+		<element kind="staticText" uuid="69acffb7-f3a8-4353-88cc-8f45569f4925" x="200" y="16" width="160" height="34" forecolor="#000066" fontSize="26.0" bold="true" italic="true">
+			<text><![CDATA[MotorPH]]></text>
+		</element>
+		<element kind="staticText" uuid="1cb64991-bbd5-47b2-a7b5-329be8cbda10" x="188" y="100" width="173" height="30" forecolor="#000066" fontSize="20.0" bold="true" underline="false" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Employee Payslip]]></text>
+		</element>
+		<element kind="image" uuid="18cb42c0-73d1-4177-a5ae-a0341734709a" x="30" y="0" width="160" height="150" hImageAlign="Center" vImageAlign="Middle">
+			<expression><![CDATA["C:/Users/user/OneDrive/Pictures/Screenshots/Screenshot 2025-07-08 181750.png"]]></expression>
+		</element>
+		<property name="com.jaspersoft.studio.unit.height" value="px"/>
+	</pageHeader>
+	<columnHeader height="60">
+		<element kind="textField" uuid="a4f91c19-e096-4891-a8df-879699f0ee62" x="145" y="0" width="130" height="20" fontSize="9.0" vTextAlign="Middle">
+			<paragraph leftIndent="2"/>
+			<expression><![CDATA[$F{Payslip No}]]></expression>
+			<property name="com.jaspersoft.studio.unit.width" value="px"/>
+			<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+			<box>
+				<pen lineWidth="0.25"/>
+				<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#000000"/>
+				<leftPen lineWidth="0.25" lineStyle="Solid" lineColor="#000000"/>
+				<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#000000"/>
+				<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#000000"/>
+			</box>
+		</element>
+		<element kind="staticText" uuid="3d96eae6-5c86-4cb2-b214-c1f26f895953" mode="Opaque" x="15" y="0" width="130" height="20" forecolor="#FFFFFF" backcolor="#000066" bold="true" hTextAlign="Left" vTextAlign="Middle">
+			<paragraph leftIndent="1"/>
+			<text><![CDATA[Payslip No]]></text>
+			<property name="com.jaspersoft.studio.unit.width" value="px"/>
+			<property name="com.jaspersoft.studio.unit.firstLineIndent" value="pixel"/>
+			<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+			<box>
+				<pen lineWidth="0.25" lineColor="#030000"/>
+				<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#030000"/>
+				<leftPen lineWidth="0.25" lineStyle="Solid" lineColor="#030000"/>
+				<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#030000"/>
+				<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#030000"/>
+			</box>
+		</element>
+		<element kind="textField" uuid="b20e5607-d076-48ec-b65f-b3f68116f0de" x="405" y="0" width="130" height="20" fontSize="9.0" vTextAlign="Middle">
+			<paragraph leftIndent="2"/>
+			<expression><![CDATA[$F{Period Start Date}]]></expression>
+			<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+			<box>
+				<pen lineWidth="0.25" lineStyle="Solid"/>
+				<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#000000"/>
+				<leftPen lineWidth="0.25" lineStyle="Solid" lineColor="#000000"/>
+				<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#000000"/>
+				<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#000000"/>
+			</box>
+		</element>
+		<element kind="staticText" uuid="f3a5ec65-af15-4d57-8c39-078353df45a6" mode="Opaque" x="275" y="0" width="130" height="20" forecolor="#FFFFFF" backcolor="#000066" bold="true">
+			<paragraph leftIndent="1"/>
+			<text><![CDATA[Period Start Date]]></text>
+			<property name="com.jaspersoft.studio.unit.width" value="px"/>
+			<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+			<box>
+				<pen lineWidth="0.25" lineColor="#030000"/>
+				<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#030000"/>
+				<leftPen lineWidth="0.25" lineStyle="Solid" lineColor="#030000"/>
+				<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#030000"/>
+				<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#030000"/>
+			</box>
+		</element>
+		<element kind="textField" uuid="4ff0d8d7-b4d1-4b87-8c62-7fe34c3f744c" x="145" y="20" width="130" height="20" fontSize="9.0" vTextAlign="Middle">
+			<paragraph leftIndent="2"/>
+			<expression><![CDATA[$F{Employee ID}]]></expression>
+			<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+			<box>
+				<pen lineWidth="0.25"/>
+				<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#000000"/>
+				<leftPen lineWidth="0.25" lineStyle="Solid" lineColor="#000000"/>
+				<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#000000"/>
+				<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#000000"/>
+			</box>
+		</element>
+		<element kind="staticText" uuid="4e155b05-3f26-4409-a6bd-ce40cdf48291" mode="Opaque" x="15" y="20" width="130" height="20" forecolor="#FFFFFF" backcolor="#000066" bold="true" hTextAlign="Left" vTextAlign="Middle">
+			<paragraph leftIndent="1"/>
+			<text><![CDATA[Employee ID]]></text>
+			<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+			<box>
+				<pen lineWidth="0.25" lineColor="#030000"/>
+				<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#030000"/>
+				<leftPen lineWidth="0.25" lineStyle="Solid" lineColor="#030000"/>
+				<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#030000"/>
+				<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#030000"/>
+			</box>
+		</element>
+		<element kind="textField" uuid="183cd91e-92a6-4b97-947c-73c7df4ed190" x="145" y="40" width="130" height="20" fontSize="9.0" vTextAlign="Middle">
+			<paragraph leftIndent="2"/>
+			<expression><![CDATA[$F{Employee Name}]]></expression>
+			<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+			<box>
+				<pen lineWidth="0.25"/>
+				<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#000000"/>
+				<leftPen lineWidth="0.25" lineStyle="Solid" lineColor="#000000"/>
+				<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#000000"/>
+				<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#000000"/>
+			</box>
+		</element>
+		<element kind="staticText" uuid="e791b902-4a02-4f01-bb05-46c7f0a7d6bf" mode="Opaque" x="15" y="40" width="130" height="20" forecolor="#FFFFFF" backcolor="#000066" bold="true" hTextAlign="Left" vTextAlign="Middle">
+			<paragraph leftIndent="1"/>
+			<text><![CDATA[Employee Name]]></text>
+			<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+			<box>
+				<pen lineWidth="0.25" lineColor="#030000"/>
+				<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#030000"/>
+				<leftPen lineWidth="0.25" lineStyle="Solid" lineColor="#030000"/>
+				<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#030000"/>
+				<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#030000"/>
+			</box>
+		</element>
+		<element kind="textField" uuid="4035ed80-3f6d-4743-b83d-da3f03f45f03" x="405" y="20" width="130" height="20" fontSize="9.0" vTextAlign="Middle">
+			<paragraph leftIndent="2"/>
+			<expression><![CDATA[$F{Period End Date}]]></expression>
+			<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+			<box>
+				<pen lineWidth="0.25" lineStyle="Solid"/>
+				<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#000000"/>
+				<leftPen lineWidth="0.25" lineStyle="Solid" lineColor="#000000"/>
+				<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#000000"/>
+				<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#000000"/>
+			</box>
+		</element>
+		<element kind="staticText" uuid="c2939ea9-6b19-479e-8752-eb6efdfcc56e" mode="Opaque" x="275" y="20" width="130" height="20" forecolor="#FFFFFF" backcolor="#000066" bold="true">
+			<paragraph leftIndent="1"/>
+			<text><![CDATA[Period End Date]]></text>
+			<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+			<box>
+				<pen lineWidth="0.25" lineColor="#030000"/>
+				<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#030000"/>
+				<leftPen lineWidth="0.25" lineStyle="Solid" lineColor="#030000"/>
+				<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#030000"/>
+				<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#030000"/>
+			</box>
+		</element>
+		<element kind="textField" uuid="b6c894dc-cec5-4eec-bcf5-24c52463e53c" x="405" y="40" width="130" height="20" fontSize="9.0" vTextAlign="Middle">
+			<paragraph leftIndent="2"/>
+			<expression><![CDATA[$F{Employee Position}]]></expression>
+			<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+			<box>
+				<pen lineWidth="0.25" lineStyle="Solid"/>
+				<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#000000"/>
+				<leftPen lineWidth="0.25" lineStyle="Solid" lineColor="#000000"/>
+				<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#000000"/>
+				<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#000000"/>
+			</box>
+		</element>
+		<element kind="staticText" uuid="fbf8c871-0852-4e98-9a8c-1dd7f682f90c" mode="Opaque" x="275" y="40" width="130" height="20" forecolor="#FFFFFF" backcolor="#000066" bold="true">
+			<paragraph leftIndent="1"/>
+			<text><![CDATA[Employee Position]]></text>
+			<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+			<box>
+				<pen lineWidth="0.25" lineColor="#030000"/>
+				<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#030000"/>
+				<leftPen lineWidth="0.25" lineStyle="Solid" lineColor="#030000"/>
+				<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#030000"/>
+				<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#030000"/>
+			</box>
+		</element>
+		<property name="com.jaspersoft.studio.unit.height" value="px"/>
+	</columnHeader>
+	<detail>
+		<band height="159" splitType="Stretch">
+			<element kind="staticText" uuid="782fcefa-91ce-41c4-a3a5-e6dac5fc2757" mode="Opaque" x="15" y="20" width="520" height="20" forecolor="#FFFFFF" backcolor="#000066" bold="true" hTextAlign="Left" vTextAlign="Middle">
+				<paragraph leftIndent="1"/>
+				<text><![CDATA[EARNINGS]]></text>
+				<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+			</element>
+			<element kind="textField" uuid="dfbcbcca-3fed-40da-bc4b-02a1f6c0df30" x="435" y="40" width="100" height="20" fontSize="9.0" pattern="P#,##0.00#;#,##0.00#-" hTextAlign="Right" vTextAlign="Middle">
+				<paragraph rightIndent="5"/>
+				<expression><![CDATA[$F{Monthly Rate}]]></expression>
+				<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+			</element>
+			<element kind="staticText" uuid="2cd2220c-f4b2-499a-9ffe-8bacded876d5" x="15" y="40" width="420" height="20" fontSize="9.0" vTextAlign="Middle">
+				<paragraph leftIndent="5"/>
+				<text><![CDATA[Monthly Rate]]></text>
+				<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+			</element>
+			<element kind="textField" uuid="7c91c365-2d9f-4094-8211-6fd3462fbae8" x="435" y="60" width="100" height="20" fontSize="9.0" pattern="P#,##0.00#;#,##0.00#-" hTextAlign="Right" vTextAlign="Middle">
+				<paragraph rightIndent="5"/>
+				<expression><![CDATA[$F{Daily Rate}]]></expression>
+				<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+			</element>
+			<element kind="staticText" uuid="d9986b55-9b61-4aa9-8d9d-52e3a5cb3e50" x="15" y="60" width="420" height="20" fontSize="9.0" vTextAlign="Middle">
+				<paragraph leftIndent="5"/>
+				<text><![CDATA[Daily Rate]]></text>
+				<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+			</element>
+			<element kind="textField" uuid="fc572b59-1076-446c-9073-563bd642aa2f" x="435" y="80" width="100" height="20" fontSize="9.0" hTextAlign="Right" vTextAlign="Middle">
+				<paragraph rightIndent="5"/>
+				<expression><![CDATA[$F{Days Worked}]]></expression>
+				<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+			</element>
+			<element kind="staticText" uuid="b0858b0e-b1cb-4693-8127-ccfcd4cbc6e7" x="15" y="80" width="420" height="20" fontSize="9.0" vTextAlign="Middle">
+				<paragraph leftIndent="5"/>
+				<text><![CDATA[Days Worked]]></text>
+				<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+			</element>
+			<element kind="textField" uuid="86e3034b-1e77-4708-88c2-d9493d7b812c" x="435" y="100" width="100" height="20" fontSize="9.0" hTextAlign="Right" vTextAlign="Middle">
+				<paragraph rightIndent="5"/>
+				<expression><![CDATA[$F{Overtime}]]></expression>
+				<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+			</element>
+			<element kind="staticText" uuid="c10bc7e6-151d-4fbe-9a4c-ca1ad19804ca" x="15" y="100" width="420" height="20" fontSize="9.0" vTextAlign="Middle">
+				<paragraph leftIndent="5"/>
+				<text><![CDATA[Overtime]]></text>
+				<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+			</element>
+			<element kind="textField" uuid="be97f615-5fc0-4bb1-b5f6-92194055afb0" mode="Opaque" x="435" y="120" width="100" height="20" backcolor="#E0E0E0" fontSize="10.0" pattern="P#,##0.00#;#,##0.00#-" hTextAlign="Right" vTextAlign="Middle">
+				<paragraph rightIndent="5"/>
+				<expression><![CDATA[$F{Gross Income}]]></expression>
+				<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+			</element>
+			<element kind="staticText" uuid="95563074-37a8-49e3-bda4-65a25e92bceb" mode="Opaque" x="15" y="120" width="420" height="20" backcolor="#E0E0E0" fontSize="10.0" vTextAlign="Middle">
+				<paragraph leftIndent="5"/>
+				<text><![CDATA[Gross Income]]></text>
+				<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+			</element>
+		</band>
+		<band height="100">
+			<element kind="staticText" uuid="1ce3b7c3-ad33-4756-a5af-2c64efa0b907" mode="Opaque" x="15" y="0" width="520" height="20" forecolor="#FFFFFF" backcolor="#000066" bold="true" hTextAlign="Left" vTextAlign="Middle">
+				<paragraph leftIndent="1"/>
+				<text><![CDATA[BENEFITS]]></text>
+				<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+			</element>
+			<element kind="textField" uuid="54ab3f2b-3d70-4552-980f-37caf25d5ae4" x="435" y="20" width="100" height="20" fontSize="9.0" pattern="P#,##0.00#;#,##0.00#-" hTextAlign="Right" vTextAlign="Middle">
+				<paragraph rightIndent="5"/>
+				<expression><![CDATA[$F{Rice Subsidy}]]></expression>
+				<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+			</element>
+			<element kind="staticText" uuid="9773a760-c1e3-4a94-b435-9e5048ac3ff4" x="15" y="20" width="420" height="20" fontSize="9.0" vTextAlign="Middle">
+				<paragraph leftIndent="5"/>
+				<text><![CDATA[Rice Subsidy]]></text>
+				<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+			</element>
+			<element kind="textField" uuid="8d4d5723-7589-4e00-aca5-f203f6879b37" x="435" y="40" width="100" height="20" fontSize="9.0" pattern="P#,##0.00#;#,##0.00#-" hTextAlign="Right" vTextAlign="Middle">
+				<paragraph rightIndent="5"/>
+				<expression><![CDATA[$F{Phone Allowance}]]></expression>
+				<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+			</element>
+			<element kind="staticText" uuid="a350dcad-9bc3-4ec9-93ad-b65051db6092" x="15" y="40" width="420" height="20" fontSize="9.0" vTextAlign="Middle">
+				<paragraph leftIndent="5"/>
+				<text><![CDATA[Phone Allowance]]></text>
+				<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+			</element>
+			<element kind="textField" uuid="baec568c-597f-4e46-bb56-6a0ff88b50ee" x="435" y="60" width="100" height="20" fontSize="9.0" pattern="P#,##0.00#;#,##0.00#-" hTextAlign="Right" vTextAlign="Middle">
+				<paragraph rightIndent="5"/>
+				<expression><![CDATA[$F{Clothing Allowance}]]></expression>
+				<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+			</element>
+			<element kind="staticText" uuid="4d47bc5d-294a-49ff-b10d-9c191344fb60" x="15" y="60" width="420" height="20" fontSize="9.0" vTextAlign="Middle">
+				<paragraph leftIndent="5"/>
+				<text><![CDATA[Clothing Allowance]]></text>
+				<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+			</element>
+			<element kind="textField" uuid="65104373-2150-4c89-9ddf-d3aa9e64222c" mode="Opaque" x="435" y="80" width="100" height="20" backcolor="#E0E0E0" fontSize="10.0" pattern="P#,##0.00#;#,##0.00#-" hTextAlign="Right" vTextAlign="Middle">
+				<paragraph rightIndent="5"/>
+				<expression><![CDATA[$F{Total Benefits}]]></expression>
+				<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+			</element>
+			<element kind="staticText" uuid="03a0338a-32a6-4262-8617-fbebc44e2b5d" mode="Opaque" x="15" y="80" width="420" height="20" backcolor="#E0E0E0" fontSize="10.0" vTextAlign="Middle">
+				<paragraph leftIndent="5"/>
+				<text><![CDATA[Total Benefits]]></text>
+				<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+			</element>
+		</band>
+		<band height="140">
+			<element kind="staticText" uuid="dee42802-d7a1-4d16-bd93-0a5d4310c129" mode="Opaque" x="15" y="20" width="520" height="20" forecolor="#FFFFFF" backcolor="#000066" bold="true" hTextAlign="Left" vTextAlign="Middle">
+				<paragraph leftIndent="1"/>
+				<text><![CDATA[DEDUCTIONS]]></text>
+				<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+			</element>
+			<element kind="textField" uuid="4ae67435-5b98-44a9-8be5-f4b6ee908f2b" x="435" y="40" width="100" height="20" fontSize="9.0" pattern="P#,##0.00#;#,##0.00#-" hTextAlign="Right" vTextAlign="Middle">
+				<paragraph rightIndent="5"/>
+				<expression><![CDATA[$F{Social Security System}]]></expression>
+				<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+			</element>
+			<element kind="staticText" uuid="4bb5d1d0-8756-4c55-8ed3-f9a4ca577a79" mode="Transparent" x="15" y="40" width="420" height="20" fontSize="9.0" vTextAlign="Middle">
+				<paragraph leftIndent="5"/>
+				<text><![CDATA[Social Security System]]></text>
+				<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+			</element>
+			<element kind="textField" uuid="77c3758d-9ffb-4e91-81a3-44dc2665870c" x="435" y="60" width="100" height="20" fontSize="9.0" pattern="P#,##0.00#;#,##0.00#-" hTextAlign="Right" vTextAlign="Middle">
+				<paragraph rightIndent="5"/>
+				<expression><![CDATA[$F{Philhealth}]]></expression>
+				<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+			</element>
+			<element kind="staticText" uuid="4f906529-0b31-431f-ad9b-6cae802ba933" mode="Transparent" x="15" y="60" width="420" height="20" fontSize="9.0" vTextAlign="Middle">
+				<paragraph leftIndent="5"/>
+				<text><![CDATA[Philhealth]]></text>
+				<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+			</element>
+			<element kind="textField" uuid="4b257b3f-576e-4f9d-978f-0959b53d2cfc" x="435" y="80" width="100" height="20" fontSize="9.0" pattern="P#,##0.00#;#,##0.00#-" hTextAlign="Right" vTextAlign="Middle">
+				<paragraph rightIndent="5"/>
+				<expression><![CDATA[$F{Pag-Ibig}]]></expression>
+				<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+			</element>
+			<element kind="staticText" uuid="dace6c48-d1fe-4b4d-a01b-a4fb3919e6fa" mode="Transparent" x="15" y="80" width="420" height="20" fontSize="9.0" vTextAlign="Middle">
+				<paragraph leftIndent="5"/>
+				<text><![CDATA[Pag-Ibig]]></text>
+				<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+			</element>
+			<element kind="textField" uuid="1a9474fb-0f66-4b20-86fc-feb51ee7af8b" x="435" y="100" width="100" height="20" fontSize="9.0" pattern="P#,##0.00#;#,##0.00#-" hTextAlign="Right" vTextAlign="Middle">
+				<paragraph rightIndent="5"/>
+				<expression><![CDATA[$F{Withholding Tax}]]></expression>
+				<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+			</element>
+			<element kind="staticText" uuid="c65858ac-05db-48dd-96a3-e71693728b14" mode="Transparent" x="15" y="100" width="420" height="20" fontSize="9.0" vTextAlign="Middle">
+				<paragraph leftIndent="5"/>
+				<text><![CDATA[Withholding Tax]]></text>
+				<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+			</element>
+			<element kind="textField" uuid="80a205ab-28bf-47fc-b945-516ad6b9e8d5" mode="Opaque" x="435" y="120" width="100" height="20" backcolor="#E0E0E0" fontSize="10.0" pattern="P#,##0.00#;#,##0.00#-" hTextAlign="Right" vTextAlign="Middle">
+				<paragraph rightIndent="5"/>
+				<expression><![CDATA[$F{Total Deductions}]]></expression>
+				<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+			</element>
+			<element kind="staticText" uuid="78da4d09-06d7-478c-a4ed-f48ccc834a87" mode="Opaque" x="15" y="120" width="420" height="20" backcolor="#E0E0E0" fontSize="10.0" vTextAlign="Middle">
+				<paragraph leftIndent="5"/>
+				<text><![CDATA[Total Deductions]]></text>
+				<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+			</element>
+		</band>
+		<band height="120">
+			<element kind="staticText" uuid="8202f835-f4a6-49ae-bcfb-1fa8a1c7fb18" mode="Opaque" x="15" y="20" width="520" height="20" forecolor="#FFFFFF" backcolor="#000066" bold="true" hTextAlign="Left" vTextAlign="Middle">
+				<paragraph leftIndent="1"/>
+				<text><![CDATA[SUMMARY]]></text>
+				<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+			</element>
+			<element kind="textField" uuid="61decc8b-56f6-4eb4-bb9a-eec7b455b98f" x="435" y="40" width="100" height="20" fontSize="9.0" pattern="P#,##0.00#;#,##0.00#-" hTextAlign="Right" vTextAlign="Middle">
+				<paragraph rightIndent="5"/>
+				<expression><![CDATA[$F{Gross Income}]]></expression>
+				<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+			</element>
+			<element kind="staticText" uuid="2c5195ad-a32d-43e6-9391-011cfba05acd" x="15" y="40" width="420" height="20" fontSize="9.0" vTextAlign="Middle">
+				<paragraph leftIndent="5"/>
+				<text><![CDATA[Gross Income]]></text>
+				<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+			</element>
+			<element kind="textField" uuid="d40e3e29-eece-48fb-97ef-db4db46640a8" x="435" y="60" width="100" height="20" fontSize="9.0" pattern="P#,##0.00#;#,##0.00#-" hTextAlign="Right" vTextAlign="Middle">
+				<paragraph rightIndent="5"/>
+				<expression><![CDATA[$F{Total Benefits}]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+			</element>
+			<element kind="staticText" uuid="19637d6a-bb77-4e50-80f6-221639d4cf0d" x="15" y="60" width="420" height="20" fontSize="9.0" vTextAlign="Middle">
+				<paragraph leftIndent="5"/>
+				<text><![CDATA[Total Benefits]]></text>
+				<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+			</element>
+			<element kind="textField" uuid="280519c5-63e1-4764-93b3-f1e1c9f33328" x="435" y="80" width="100" height="20" fontSize="9.0" pattern="P#,##0.00#;#,##0.00#-" hTextAlign="Right" vTextAlign="Middle">
+				<paragraph rightIndent="5"/>
+				<expression><![CDATA[$F{Total Deductions}]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+			</element>
+			<element kind="staticText" uuid="80a8b32a-034b-4d40-8905-e56f8dfb0757" x="15" y="80" width="420" height="20" fontSize="9.0" vTextAlign="Middle">
+				<paragraph leftIndent="5"/>
+				<text><![CDATA[Total Deductions]]></text>
+				<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+			</element>
+			<element kind="textField" uuid="e72b8d68-7d7b-4d94-a4d1-f2e4ccc12ae4" mode="Opaque" x="435" y="100" width="100" height="20" backcolor="#E0E0E0" fontSize="10.0" pattern="P#,##0.00#;#,##0.00#-" underline="true" hTextAlign="Right" vTextAlign="Middle">
+				<paragraph rightIndent="5"/>
+				<expression><![CDATA[$F{Take Home Pay}]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+			</element>
+			<element kind="staticText" uuid="bc50c9bb-202a-4842-af0e-3d792df6f688" mode="Opaque" x="15" y="100" width="420" height="20" backcolor="#E0E0E0" fontSize="10.0" underline="true" vTextAlign="Middle">
+				<paragraph leftIndent="5"/>
+				<text><![CDATA[Take Home Pay]]></text>
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+			</element>
+		</band>
+	</detail>
+</jasperReport>
