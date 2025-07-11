@@ -659,7 +659,7 @@ public class ViewSalary extends javax.swing.JFrame {
 
             // Generate report
             ReportGenerator generator = new ReportGenerator();
-            generator.generateReport("src/main/resources/PayslipGenerated.jrxml", parameters, conn);
+            generator.generateReport("PayslipGenerated.jrxml", parameters, conn);
 
         } catch (Exception ex) {
             Logger.getLogger(ViewSalary.class.getName()).log(Level.SEVERE, null, ex);
@@ -691,7 +691,7 @@ public class ViewSalary extends javax.swing.JFrame {
 
             // Generate report
             ReportGenerator generator = new ReportGenerator();
-            generator.generateReport("src/main/resources/PayrollSummaryReport.jrxml", parameters, conn);
+            generator.generateReport("PayrollSummaryReport.jrxml", parameters, conn);
 
         } catch (Exception ex) {
             Logger.getLogger(ViewSalary.class.getName()).log(Level.SEVERE, null, ex);
@@ -730,7 +730,7 @@ public class ViewSalary extends javax.swing.JFrame {
 
             // Generate report
             ReportGenerator generator = new ReportGenerator();
-            generator.generateReport("src/main/resources/AnnualGovContributionReport.jrxml", parameters, conn);
+            generator.generateReport("AnnualGovContributionReport.jrxml", parameters, conn);
 
         } catch (Exception ex) {
             Logger.getLogger(ViewSalary.class.getName()).log(Level.SEVERE, null, ex);
