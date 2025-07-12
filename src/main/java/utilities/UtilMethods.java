@@ -4,6 +4,11 @@
  */
 package utilities;
 
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import model.Admin;
 import model.Employee;
 import model.Manager;
@@ -61,6 +66,26 @@ public class UtilMethods {
 
         // Manager can't view Admins or other Managers (unless it's themself)
         return !(isAdmin || (isManager && !isSelf));
+    }
+    
+    public static void styleButton(JButton button) {
+        button.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        button.setBackground(new Color(50, 150, 250)); // A vibrant blue
+        button.setForeground(Color.WHITE);
+        button.setFocusPainted(false);
+        button.setBorder(BorderFactory.createRaisedBevelBorder());
+        //button.setPreferredSize(new Dimension(200, 35)); // Consistent size for action buttons
+
+        // Hover effect
+        button.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                button.setBackground(new Color(70, 170, 255));
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                button.setBackground(new Color(50, 150, 250));
+            }
+        });
     }
 
 }

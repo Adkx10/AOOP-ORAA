@@ -22,7 +22,12 @@ import dao.EmployeeDAO;
 import dao.LeaveTypeDAO;
 import java.util.Calendar;
 import data.DBConnection;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.sql.Connection;
+import javax.swing.BorderFactory;
+import utilities.UtilMethods;
 
 public class ViewRequest extends javax.swing.JFrame {
 
@@ -58,7 +63,7 @@ public class ViewRequest extends javax.swing.JFrame {
         }
 
         initComponents();
-
+        applyCustomStyles();
         if (processRequestedDate != null) {
             processRequestedDate.setDateFormatString("yyyy-MM-dd");
         }
@@ -289,10 +294,10 @@ public class ViewRequest extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        approveRequest1 = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         empNoField = new javax.swing.JTextField();
         viewRequest = new javax.swing.JButton();
@@ -317,47 +322,27 @@ public class ViewRequest extends javax.swing.JFrame {
         jScrollPane2 = new javax.swing.JScrollPane();
         leaveBalanceTable = new javax.swing.JTable();
 
-        approveRequest1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        approveRequest1.setText("Approve");
-        approveRequest1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                approveRequest1ActionPerformed(evt);
-            }
-        });
-
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("View Leave Request");
         setMinimumSize(new java.awt.Dimension(500, 500));
 
         jPanel1.setBackground(new java.awt.Color(0, 102, 255));
         jPanel1.setPreferredSize(new java.awt.Dimension(700, 100));
+        jPanel1.setLayout(null);
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jLabel3.setText(currentUser.getEmployeeNo());
+        jLabel3.setText("Employee ID: " + currentUser.getEmployeeNo());
+        jPanel1.add(jLabel3);
+        jLabel3.setBounds(6, 78, 220, 16);
 
         jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel4.setText("jLabel4");
+        jPanel1.add(jLabel4);
+        jLabel4.setBounds(10, 10, 140, 16);
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel3)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 1172, Short.MAX_VALUE)
-                .addComponent(jLabel4)
-                .addContainerGap())
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(78, Short.MAX_VALUE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(jLabel4))
-                .addContainerGap())
-        );
+        jLabel7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/motorph.png"))); // NOI18N
+        jPanel1.add(jLabel7);
+        jLabel7.setBounds(0, -110, 2370, 280);
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
 
@@ -612,10 +597,6 @@ public class ViewRequest extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void approveRequest1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_approveRequest1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_approveRequest1ActionPerformed
-
     private void refreshButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshButton1ActionPerformed
         try {
             String currentEmpNo = currentUser.getEmployeeNo();
@@ -775,7 +756,7 @@ public class ViewRequest extends javax.swing.JFrame {
 
             if (targetEmpNo.isEmpty() || selectedRequestedDate == null) {
                 JOptionPane.showMessageDialog(this, "Please enter both Employee # and Date to approve a request.", "Input Error", JOptionPane.WARNING_MESSAGE);
-                conn.rollback(); 
+                conn.rollback();
                 return;
             }
 
@@ -793,7 +774,7 @@ public class ViewRequest extends javax.swing.JFrame {
 
             if (foundRequest == null) {
                 JOptionPane.showMessageDialog(this, "Request not found for this Employee # and Date!", "Search Request", JOptionPane.WARNING_MESSAGE);
-                conn.rollback(); 
+                conn.rollback();
                 return;
             } else {
                 String newStatus = "Approved";
@@ -801,12 +782,12 @@ public class ViewRequest extends javax.swing.JFrame {
 
                 updateRequest(conn, targetEmpNo, normalizedSelectedDate, newStatus, newRemarks);
 
-                conn.commit(); 
+                conn.commit();
                 JOptionPane.showMessageDialog(this, "Request approved and leave balance updated successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
                 readData(null, null);
             }
         } catch (SQLException ex) {
-           
+
             if (conn != null) {
                 try {
                     conn.rollback();
@@ -890,9 +871,27 @@ public class ViewRequest extends javax.swing.JFrame {
     public Employee getCurrentUser() { // Added getter for currentUser for Remarks.java
         return currentUser;
     }
+
+    private void applyCustomStyles() {
+        // Apply consistent button styling
+        UtilMethods.styleButton(approveRequest);
+        UtilMethods.styleButton(refreshButton);
+        UtilMethods.styleButton(deleteRequest);
+        UtilMethods.styleButton(refreshButton1);
+        UtilMethods.styleButton(rejectRequest);
+        UtilMethods.styleButton(submitRequest);
+        UtilMethods.styleButton(viewRequest);
+
+        // Style back button slightly differently if desired (e.g., less prominent)
+        backButton.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        backButton.setBackground(new Color(100, 100, 100)); // Darker gray
+        backButton.setForeground(Color.WHITE);
+        backButton.setFocusPainted(false);
+        backButton.setBorder(BorderFactory.createRaisedBevelBorder());
+        backButton.setPreferredSize(new Dimension(120, 30));
+    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton approveRequest;
-    private javax.swing.JButton approveRequest1;
     private javax.swing.JButton backButton;
     private javax.swing.JButton deleteRequest;
     private javax.swing.JTextField empNoField;
@@ -902,6 +901,7 @@ public class ViewRequest extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;

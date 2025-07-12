@@ -1,8 +1,12 @@
 package gui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Label;
 import java.sql.SQLException;
@@ -10,8 +14,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JOptionPane;
 import model.Employee;
@@ -19,6 +25,7 @@ import model.Admin;
 import model.Manager;
 import model.RegularEmployee;
 import model.LogInPage;
+import utilities.UtilMethods;
 
 public class HomePage extends javax.swing.JFrame {
 
@@ -26,16 +33,16 @@ public class HomePage extends javax.swing.JFrame {
 
     private Employee currentUser;
 
-    private JButton addUpdateDeleteBtn;
-    private JButton viewAllSalaryBtn;
-    private JButton viewLeaveBtn;
-    private JButton viewEmployeeDetailsBtn;
-    private JButton viewSalaryBtn;
-    private JButton requestLeaveBtn;
-    private JButton viewPersonalDetailsBtn;
+//    private JButton addUpdateDeleteBtn;
+//    private JButton viewAllSalaryBtn;
+//    private JButton viewLeaveBtn;
+//    private JButton viewEmployeeDetailsBtn;
+//    private JButton viewSalaryBtn;
+//    private JButton requestLeaveBtn;
+//    private JButton viewPersonalDetailsBtn;
 
-    private JPanel buttonPanel;
-    private JPanel centerPanel;
+//    private JPanel buttonPanel;
+//    private JPanel centerPanel;
 
     public HomePage(Employee user) {
         this.currentUser = user;
@@ -80,8 +87,8 @@ public class HomePage extends javax.swing.JFrame {
         return viewPersonalDetailsBtn;
     }
 
-    public Label getLabel1() {
-        return label1;
+    public JLabel getLabel1() {
+        return currentUserLabel;
     }
 
     public Employee getCurrentUser() {
@@ -90,13 +97,20 @@ public class HomePage extends javax.swing.JFrame {
 
     private void initializeUI() {
         // Initialize buttons
-        addUpdateDeleteBtn = new JButton("Manage Employees"); //Admin
-        viewAllSalaryBtn = new JButton("View All Salaries"); //Admin, Manager
-        viewLeaveBtn = new JButton("View Leave Requests"); // Admin, Manager
-        viewEmployeeDetailsBtn = new JButton("View Employee Details"); //Manager
-        viewPersonalDetailsBtn = new JButton("View Personal Details"); //Regular Employee
-        viewSalaryBtn = new JButton("View Salary"); //Regular Employee
-        requestLeaveBtn = new JButton("Request Leave"); //Regular Employee
+        UtilMethods.styleButton(addUpdateDeleteBtn);
+        UtilMethods.styleButton(viewAllSalaryBtn);
+        UtilMethods.styleButton(viewLeaveBtn);
+        UtilMethods.styleButton(viewEmployeeDetailsBtn);
+        UtilMethods.styleButton(viewPersonalDetailsBtn);
+        UtilMethods.styleButton(viewSalaryBtn);
+        UtilMethods.styleButton(requestLeaveBtn);
+        
+        logoutButton.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        logoutButton.setBackground(new Color(100, 100, 100)); // Darker gray
+        logoutButton.setForeground(Color.WHITE);
+        logoutButton.setFocusPainted(false);
+        logoutButton.setBorder(BorderFactory.createRaisedBevelBorder());
+        logoutButton.setPreferredSize(new Dimension(120, 30));
 
         //Button action listeners
         //Admin
@@ -159,30 +173,30 @@ public class HomePage extends javax.swing.JFrame {
             }
         });
 
-        // Set button size
-        Dimension buttonSize = new Dimension(200, 50);
-        addUpdateDeleteBtn.setPreferredSize(buttonSize);
-        viewAllSalaryBtn.setPreferredSize(buttonSize);
-        viewLeaveBtn.setPreferredSize(buttonSize);
-        viewEmployeeDetailsBtn.setPreferredSize(buttonSize);
-        viewPersonalDetailsBtn.setPreferredSize(buttonSize);
-        viewSalaryBtn.setPreferredSize(buttonSize);
-        requestLeaveBtn.setPreferredSize(buttonSize);
-
+//        // Set button size
+//        Dimension buttonSize = new Dimension(200, 50);
+//        addUpdateDeleteBtn.setPreferredSize(buttonSize);
+//        viewAllSalaryBtn.setPreferredSize(buttonSize);
+//        viewLeaveBtn.setPreferredSize(buttonSize);
+//        viewEmployeeDetailsBtn.setPreferredSize(buttonSize);
+//        viewPersonalDetailsBtn.setPreferredSize(buttonSize);
+//        viewSalaryBtn.setPreferredSize(buttonSize);
+//        requestLeaveBtn.setPreferredSize(buttonSize);
+//
         // Panel with GridLayout (1 column, multiple rows)
-        buttonPanel = new JPanel(new GridLayout(0, 1, 10, 10));
+        //buttonPanel = new JPanel(new GridLayout(0, 1, 10, 10));
 
         // Wrapper panel for centering
-        centerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 150));
-        centerPanel.add(buttonPanel);
+        //centerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 200));
+        //centerPanel.add(buttonPanel);
 
         // Set frame layout
-        setLayout(new BorderLayout());
-        add(centerPanel, BorderLayout.CENTER);
+        //setLayout(new BorderLayout());
+        //add(centerPanel, BorderLayout.CENTER);
 
-        setSize(400, 400);
-        setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        //setSize(400, 400);
+       //setLocationRelativeTo(null);
+        //setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
     private void configureButtons() {
@@ -208,9 +222,18 @@ public class HomePage extends javax.swing.JFrame {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        label1 = new java.awt.Label();
         date = new javax.swing.JLabel();
+        currentUserLabel = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
         logoutButton = new javax.swing.JButton();
+        buttonPanel = new javax.swing.JPanel();
+        requestLeaveBtn = new javax.swing.JButton();
+        viewSalaryBtn = new javax.swing.JButton();
+        viewPersonalDetailsBtn = new javax.swing.JButton();
+        viewEmployeeDetailsBtn = new javax.swing.JButton();
+        addUpdateDeleteBtn = new javax.swing.JButton();
+        viewAllSalaryBtn = new javax.swing.JButton();
+        viewLeaveBtn = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("MotorPH System");
@@ -224,19 +247,19 @@ public class HomePage extends javax.swing.JFrame {
         jPanel1.setPreferredSize(new java.awt.Dimension(150, 100));
         jPanel1.setLayout(null);
 
-        label1.setBackground(new java.awt.Color(0, 102, 255));
-        label1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        label1.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
-        label1.setName(""); // NOI18N
-        label1.setText("Employee ID: " + currentUser.getEmployeeNo());
-        label1.setVisible(true);
-        jPanel1.add(label1);
-        label1.setBounds(20, 70, 170, 20);
-
         date.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         date.setText("jLabel1");
         jPanel1.add(date);
-        date.setBounds(590, 70, 100, 16);
+        date.setBounds(10, 10, 100, 16);
+
+        currentUserLabel.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        currentUserLabel.setText("Employee ID: " + currentUser.getEmployeeNo());
+        jPanel1.add(currentUserLabel);
+        currentUserLabel.setBounds(10, 70, 210, 16);
+
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/motorph.png"))); // NOI18N
+        jPanel1.add(jLabel1);
+        jLabel1.setBounds(-30, -60, 2280, 170);
 
         logoutButton.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         logoutButton.setText("Log Out");
@@ -246,23 +269,60 @@ public class HomePage extends javax.swing.JFrame {
             }
         });
 
+        buttonPanel.setLayout(new java.awt.GridLayout(0, 1, 10, 10));
+
+        requestLeaveBtn.setBackground(new java.awt.Color(50, 150, 250));
+        requestLeaveBtn.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        requestLeaveBtn.setForeground(new java.awt.Color(255, 255, 255));
+        requestLeaveBtn.setText("Request Leave");
+        requestLeaveBtn.setPreferredSize(new java.awt.Dimension(200, 50));
+        buttonPanel.add(requestLeaveBtn);
+
+        viewSalaryBtn.setText("View Salary");
+        viewSalaryBtn.setPreferredSize(new java.awt.Dimension(200, 50));
+        buttonPanel.add(viewSalaryBtn);
+
+        viewPersonalDetailsBtn.setText("View Personal Details");
+        viewPersonalDetailsBtn.setPreferredSize(new java.awt.Dimension(200, 50));
+        buttonPanel.add(viewPersonalDetailsBtn);
+
+        viewEmployeeDetailsBtn.setText("View Employee Details");
+        viewEmployeeDetailsBtn.setPreferredSize(new java.awt.Dimension(200, 50));
+        buttonPanel.add(viewEmployeeDetailsBtn);
+
+        addUpdateDeleteBtn.setText("Manage Employees");
+        addUpdateDeleteBtn.setPreferredSize(new java.awt.Dimension(200, 50));
+        buttonPanel.add(addUpdateDeleteBtn);
+
+        viewAllSalaryBtn.setText("View All Salaries");
+        viewAllSalaryBtn.setPreferredSize(new java.awt.Dimension(200, 50));
+        buttonPanel.add(viewAllSalaryBtn);
+
+        viewLeaveBtn.setText("View Leave Requests");
+        viewLeaveBtn.setPreferredSize(new java.awt.Dimension(200, 50));
+        buttonPanel.add(viewLeaveBtn);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 700, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap(258, Short.MAX_VALUE)
+                .addComponent(buttonPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 162, Short.MAX_VALUE)
                 .addComponent(logoutButton)
-                .addGap(14, 14, 14))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(logoutButton)
-                .addContainerGap(405, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(logoutButton)
+                    .addComponent(buttonPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(15, Short.MAX_VALUE))
         );
 
         pack();
@@ -277,9 +337,18 @@ public class HomePage extends javax.swing.JFrame {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton addUpdateDeleteBtn;
+    private javax.swing.JPanel buttonPanel;
+    private javax.swing.JLabel currentUserLabel;
     private javax.swing.JLabel date;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
-    private java.awt.Label label1;
     private javax.swing.JButton logoutButton;
+    private javax.swing.JButton requestLeaveBtn;
+    private javax.swing.JButton viewAllSalaryBtn;
+    private javax.swing.JButton viewEmployeeDetailsBtn;
+    private javax.swing.JButton viewLeaveBtn;
+    private javax.swing.JButton viewPersonalDetailsBtn;
+    private javax.swing.JButton viewSalaryBtn;
     // End of variables declaration//GEN-END:variables
 }

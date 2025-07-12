@@ -32,6 +32,20 @@ import model.Payroll;
 import utilities.ReportGenerator;
 import utilities.UtilMethods;
 
+import java.awt.Font;
+import java.awt.Color;
+import javax.swing.BorderFactory;
+import javax.swing.JLabel;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.Dimension;
+import javax.swing.ImageIcon; // For image handling
+import java.awt.Image; // For image scaling
+import java.awt.Graphics; // For custom painting
+
 public class ViewSalary extends javax.swing.JFrame {
 
     private static final Logger LOGGER = Logger.getLogger(ViewSalary.class.getName());
@@ -74,13 +88,14 @@ public class ViewSalary extends javax.swing.JFrame {
         }
 
         initComponents();
+        applyCustomStyles();
         showDate();
         this.setLocationRelativeTo(null);
-        
-        if (currentUser instanceof Manager){
-            jButton2.setVisible(false);
-            payrollRunButton.setVisible(false);
-            jLabel1.setVisible(false);
+
+        if (currentUser instanceof Manager) {
+            payrollSummaryReportButton.setVisible(false);
+            runPayrollButton.setVisible(false);
+            payrollInstructionLabel.setVisible(false);
         }
     }
 
@@ -95,12 +110,12 @@ public class ViewSalary extends javax.swing.JFrame {
     }
 
     public void viewOwnSalary() {
-        viewCompensation.setVisible(true);
+        viewCompensationButton.setVisible(true);
         employeeNo.setText(empNo);
         employeeNo.setEditable(false);
-        payrollRunButton.setVisible(false);
-        jLabel1.setVisible(false);
-        jButton2.setVisible(false);
+        runPayrollButton.setVisible(false);
+        payrollInstructionLabel.setVisible(false);
+        payrollSummaryReportButton.setVisible(false);
     }
 
     /**
@@ -117,27 +132,28 @@ public class ViewSalary extends javax.swing.JFrame {
         hw1 = new javax.swing.JComboBox<>();
         label5 = new java.awt.Label();
         jPanel1 = new javax.swing.JPanel();
-        label4 = new java.awt.Label();
         date = new javax.swing.JLabel();
+        headerTitleLabel = new javax.swing.JLabel();
+        backgroundLabel = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
-        label1 = new java.awt.Label();
-        label2 = new java.awt.Label();
-        label3 = new java.awt.Label();
+        employeeNoLabel = new java.awt.Label();
+        monthLabel = new java.awt.Label();
+        instructionLabel = new java.awt.Label();
         employeeNo = new javax.swing.JTextField();
-        viewButton = new javax.swing.JButton();
+        viewSalaryButton = new javax.swing.JButton();
         backButton = new javax.swing.JButton();
-        viewCompensation = new javax.swing.JButton();
+        viewCompensationButton = new javax.swing.JButton();
         hw = new javax.swing.JComboBox<>();
-        viewButton1 = new javax.swing.JButton();
-        year = new java.awt.Label();
+        viewAttendanceButton = new javax.swing.JButton();
+        yearLabel = new java.awt.Label();
         jYearChooser1 = new com.toedter.calendar.JYearChooser();
-        payrollRunButton = new javax.swing.JButton();
-        jLabel1 = new javax.swing.JLabel();
+        runPayrollButton = new javax.swing.JButton();
+        payrollInstructionLabel = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
         showData = new javax.swing.JTextArea();
-        genPayslip = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        govContriReport = new javax.swing.JButton();
+        generatePayslipButton = new javax.swing.JButton();
+        payrollSummaryReportButton = new javax.swing.JButton();
+        govContributionReportButton = new javax.swing.JButton();
 
         hw1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "January", "February", "March", "April", "June", "July", "August", "September", "October", "November", "December" }));
 
@@ -149,52 +165,41 @@ public class ViewSalary extends javax.swing.JFrame {
         setBackground(new java.awt.Color(204, 204, 204));
         setMinimumSize(new java.awt.Dimension(700, 540));
 
-        jPanel1.setBackground(new java.awt.Color(0, 102, 255));
+        jPanel1.setBackground(new java.awt.Color(0, 0, 255));
         jPanel1.setPreferredSize(new java.awt.Dimension(150, 100));
-
-        label4.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
-        label4.setText("View Salary");
+        jPanel1.setLayout(null);
 
         date.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         date.setText("jLabel1");
+        jPanel1.add(date);
+        date.setBounds(10, 10, 80, 16);
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(20, 20, 20)
-                .addComponent(label4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 610, Short.MAX_VALUE)
-                .addComponent(date)
-                .addGap(20, 20, 20))
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(70, Short.MAX_VALUE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(label4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(date, javax.swing.GroupLayout.Alignment.TRAILING))
-                .addContainerGap())
-        );
+        headerTitleLabel.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        headerTitleLabel.setText("View Salary");
+        jPanel1.add(headerTitleLabel);
+        headerTitleLabel.setBounds(10, 70, 70, 16);
+
+        backgroundLabel.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+        backgroundLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/motorph.png"))); // NOI18N
+        jPanel1.add(backgroundLabel);
+        backgroundLabel.setBounds(-740, -80, 2790, 220);
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
 
-        label1.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
-        label1.setText("Employee No.:");
+        employeeNoLabel.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
+        employeeNoLabel.setText("Employee No.:");
 
-        label2.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
-        label2.setText("Month :");
+        monthLabel.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
+        monthLabel.setText("Month :");
 
-        label3.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        label3.setText("Enter Employee Data To View Salary");
+        instructionLabel.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        instructionLabel.setText("Enter Employee Data To View Salary");
 
-        viewButton.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        viewButton.setText("View Salary");
-        viewButton.addActionListener(new java.awt.event.ActionListener() {
+        viewSalaryButton.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        viewSalaryButton.setText("View Salary");
+        viewSalaryButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                viewButtonActionPerformed(evt);
+                viewSalaryButtonActionPerformed(evt);
             }
         });
 
@@ -206,37 +211,37 @@ public class ViewSalary extends javax.swing.JFrame {
             }
         });
 
-        viewCompensation.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        viewCompensation.setText("View Compensation Details");
-        viewCompensation.addActionListener(new java.awt.event.ActionListener() {
+        viewCompensationButton.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        viewCompensationButton.setText("View Compensation Details");
+        viewCompensationButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                viewCompensationActionPerformed(evt);
+                viewCompensationButtonActionPerformed(evt);
             }
         });
 
         hw.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "January", "February", "March", "April", "June", "July", "August", "September", "October", "November", "December" }));
 
-        viewButton1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        viewButton1.setText("View Attendance");
-        viewButton1.addActionListener(new java.awt.event.ActionListener() {
+        viewAttendanceButton.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        viewAttendanceButton.setText("View Attendance");
+        viewAttendanceButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                viewButton1ActionPerformed(evt);
+                viewAttendanceButtonActionPerformed(evt);
             }
         });
 
-        year.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
-        year.setText("Year :");
+        yearLabel.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
+        yearLabel.setText("Year :");
 
-        payrollRunButton.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        payrollRunButton.setText("Run Payroll");
-        payrollRunButton.addActionListener(new java.awt.event.ActionListener() {
+        runPayrollButton.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        runPayrollButton.setText("Run Payroll");
+        runPayrollButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                payrollRunButtonActionPerformed(evt);
+                runPayrollButtonActionPerformed(evt);
             }
         });
 
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jLabel1.setText("Select the Month and Year");
+        payrollInstructionLabel.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        payrollInstructionLabel.setText("Select the Month and Year");
 
         showData.setEditable(false);
         showData.setColumns(20);
@@ -245,27 +250,27 @@ public class ViewSalary extends javax.swing.JFrame {
         showData.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         jScrollPane2.setViewportView(showData);
 
-        genPayslip.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        genPayslip.setText("Generate Payslip");
-        genPayslip.addActionListener(new java.awt.event.ActionListener() {
+        generatePayslipButton.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        generatePayslipButton.setText("Generate Payslip");
+        generatePayslipButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                genPayslipActionPerformed(evt);
+                generatePayslipButtonActionPerformed(evt);
             }
         });
 
-        jButton2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jButton2.setText("Payroll Summary Report");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        payrollSummaryReportButton.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        payrollSummaryReportButton.setText("Payroll Summary Report");
+        payrollSummaryReportButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                payrollSummaryReportButtonActionPerformed(evt);
             }
         });
 
-        govContriReport.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        govContriReport.setText("YTD Gov Contribution Report");
-        govContriReport.addActionListener(new java.awt.event.ActionListener() {
+        govContributionReportButton.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        govContributionReportButton.setText("YTD Gov Contribution Report");
+        govContributionReportButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                govContriReportActionPerformed(evt);
+                govContributionReportButtonActionPerformed(evt);
             }
         });
 
@@ -280,37 +285,37 @@ public class ViewSalary extends javax.swing.JFrame {
                             .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addGap(57, 57, 57)
                                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(jLabel1)
-                                    .addComponent(viewCompensation, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(viewButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(viewButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(payrollRunButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addComponent(backButton))
+                                    .addComponent(payrollInstructionLabel)
+                                    .addComponent(viewCompensationButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(viewSalaryButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(viewAttendanceButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(runPayrollButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(payrollSummaryReportButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                                 .addContainerGap()
                                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(label2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(label1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(year, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(monthLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(employeeNoLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(yearLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addComponent(employeeNo)
                                     .addComponent(hw, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jYearChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                    .addComponent(jYearChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(backButton)))
                         .addGap(56, 56, 56))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                        .addComponent(label3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(instructionLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 448, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(genPayslip)
+                        .addComponent(generatePayslipButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(govContriReport)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addComponent(govContributionReportButton)
+                        .addGap(0, 119, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
@@ -319,44 +324,44 @@ public class ViewSalary extends javax.swing.JFrame {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGap(34, 34, 34)
-                        .addComponent(label3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(instructionLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(employeeNo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(label1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(employeeNoLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(hw, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(label2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(monthLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(year, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(yearLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jYearChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(viewButton)
+                        .addComponent(viewSalaryButton)
                         .addGap(12, 12, 12)
-                        .addComponent(viewButton1)
+                        .addComponent(viewAttendanceButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(viewCompensation)
+                        .addComponent(viewCompensationButton)
                         .addGap(13, 13, 13)
-                        .addComponent(jLabel1)
+                        .addComponent(payrollInstructionLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(payrollRunButton)
+                        .addComponent(runPayrollButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jButton2)
-                        .addGap(0, 0, Short.MAX_VALUE))
+                        .addComponent(payrollSummaryReportButton)
+                        .addGap(0, 52, Short.MAX_VALUE))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 393, Short.MAX_VALUE)))
+                        .addComponent(jScrollPane2)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(backButton)
-                    .addComponent(genPayslip)
-                    .addComponent(govContriReport))
+                    .addComponent(generatePayslipButton)
+                    .addComponent(govContributionReportButton))
                 .addContainerGap())
         );
 
-        label2.getAccessibleContext().setAccessibleName("Month (Ex. July):");
+        monthLabel.getAccessibleContext().setAccessibleName("Month (Ex. July):");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -381,7 +386,7 @@ public class ViewSalary extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void viewButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewButtonActionPerformed
+    private void viewSalaryButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewSalaryButtonActionPerformed
         try {
             String enteredEmpNo = employeeNo.getText().trim();
             String month = hw.getSelectedItem().toString().trim();
@@ -459,14 +464,14 @@ public class ViewSalary extends javax.swing.JFrame {
             LOGGER.log(Level.SEVERE, "Database error viewing payslip details: " + ex.getMessage(), ex);
             JOptionPane.showMessageDialog(this, "Database error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
-    }//GEN-LAST:event_viewButtonActionPerformed
+    }//GEN-LAST:event_viewSalaryButtonActionPerformed
 
     private void backButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backButtonActionPerformed
         homePage.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_backButtonActionPerformed
 
-    private void viewCompensationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewCompensationActionPerformed
+    private void viewCompensationButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewCompensationButtonActionPerformed
         try {
             String enteredEmpNo = employeeNo.getText().trim();
             String month = hw.getSelectedItem().toString().trim();
@@ -541,9 +546,9 @@ public class ViewSalary extends javax.swing.JFrame {
             LOGGER.log(Level.SEVERE, "Database error viewing compensation details: " + ex.getMessage(), ex);
             JOptionPane.showMessageDialog(this, "Database error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
-    }//GEN-LAST:event_viewCompensationActionPerformed
+    }//GEN-LAST:event_viewCompensationButtonActionPerformed
 
-    private void viewButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewButton1ActionPerformed
+    private void viewAttendanceButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewAttendanceButtonActionPerformed
         try {
             String enteredEmpNo = employeeNo.getText().trim();
             String month = hw.getSelectedItem().toString().trim();
@@ -595,9 +600,9 @@ public class ViewSalary extends javax.swing.JFrame {
             LOGGER.log(Level.SEVERE, "Database error viewing attendance details: " + ex.getMessage(), ex);
             JOptionPane.showMessageDialog(this, "Database error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
-    }//GEN-LAST:event_viewButton1ActionPerformed
+    }//GEN-LAST:event_viewAttendanceButtonActionPerformed
 
-    private void payrollRunButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_payrollRunButtonActionPerformed
+    private void runPayrollButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_runPayrollButtonActionPerformed
         String selectedMonthName = hw.getSelectedItem().toString().toUpperCase();
         int selectedYear = jYearChooser1.getYear();
 
@@ -623,9 +628,9 @@ public class ViewSalary extends javax.swing.JFrame {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(this, "Payroll error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
-    }//GEN-LAST:event_payrollRunButtonActionPerformed
+    }//GEN-LAST:event_runPayrollButtonActionPerformed
 
-    private void genPayslipActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_genPayslipActionPerformed
+    private void generatePayslipButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_generatePayslipButtonActionPerformed
         try (Connection conn = DBConnection.getConnection()) {
 
             String employeeId = employeeNo.getText().trim();
@@ -664,11 +669,11 @@ public class ViewSalary extends javax.swing.JFrame {
         } catch (Exception ex) {
             Logger.getLogger(ViewSalary.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }//GEN-LAST:event_genPayslipActionPerformed
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    }//GEN-LAST:event_generatePayslipButtonActionPerformed
+    private void payrollSummaryReportButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_payrollSummaryReportButtonActionPerformed
         try (Connection conn = DBConnection.getConnection()) {
 
-            int month = UtilMethods.getMonthIndex(hw.getSelectedItem().toString()); 
+            int month = UtilMethods.getMonthIndex(hw.getSelectedItem().toString());
             int year = jYearChooser1.getYear();
 
             // --- Access Control Check ---
@@ -696,9 +701,9 @@ public class ViewSalary extends javax.swing.JFrame {
         } catch (Exception ex) {
             Logger.getLogger(ViewSalary.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }//GEN-LAST:event_jButton2ActionPerformed
+    }//GEN-LAST:event_payrollSummaryReportButtonActionPerformed
 
-    private void govContriReportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_govContriReportActionPerformed
+    private void govContributionReportButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_govContributionReportButtonActionPerformed
         try (Connection conn = DBConnection.getConnection()) {
 
             String employeeId = employeeNo.getText().trim();
@@ -735,34 +740,63 @@ public class ViewSalary extends javax.swing.JFrame {
         } catch (Exception ex) {
             Logger.getLogger(ViewSalary.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }//GEN-LAST:event_govContriReportActionPerformed
+    }//GEN-LAST:event_govContributionReportButtonActionPerformed
+    private void applyCustomStyles() {
+        // Apply consistent button styling
+        UtilMethods.styleButton(viewSalaryButton);
+        UtilMethods.styleButton(viewAttendanceButton);
+        UtilMethods.styleButton(viewCompensationButton);
+        UtilMethods.styleButton(runPayrollButton);
+        UtilMethods.styleButton(payrollSummaryReportButton);
+        UtilMethods.styleButton(generatePayslipButton);
+        UtilMethods.styleButton(govContributionReportButton);
 
+        // Style back button slightly differently if desired (e.g., less prominent)
+        backButton.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        backButton.setBackground(new Color(100, 100, 100)); // Darker gray
+        backButton.setForeground(Color.WHITE);
+        backButton.setFocusPainted(false);
+        backButton.setBorder(BorderFactory.createRaisedBevelBorder());
+        backButton.setPreferredSize(new Dimension(120, 30));
+
+//        // Text field styling
+//        employeeNo.setBorder(BorderFactory.createCompoundBorder(
+//                BorderFactory.createLineBorder(new Color(150, 150, 150)),
+//                BorderFactory.createEmptyBorder(5, 5, 5, 5)
+//        ));
+//        employeeNo.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+//
+//        // Combo box styling
+//        hw.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+//        jYearChooser1.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton backButton;
+    private javax.swing.JLabel backgroundLabel;
     private javax.swing.JLabel date;
     private javax.swing.JTextField employeeNo;
-    private javax.swing.JButton genPayslip;
-    private javax.swing.JButton govContriReport;
+    private java.awt.Label employeeNoLabel;
+    private javax.swing.JButton generatePayslipButton;
+    private javax.swing.JButton govContributionReportButton;
+    private javax.swing.JLabel headerTitleLabel;
     private javax.swing.JComboBox<String> hw;
     private javax.swing.JComboBox<String> hw1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JLabel jLabel1;
+    private java.awt.Label instructionLabel;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane2;
     private com.toedter.calendar.JYearChooser jYearChooser1;
-    private java.awt.Label label1;
-    private java.awt.Label label2;
-    private java.awt.Label label3;
-    private java.awt.Label label4;
     private java.awt.Label label5;
-    private javax.swing.JButton payrollRunButton;
+    private java.awt.Label monthLabel;
+    private javax.swing.JLabel payrollInstructionLabel;
+    private javax.swing.JButton payrollSummaryReportButton;
+    private javax.swing.JButton runPayrollButton;
     private javax.swing.JTextArea showData;
     private com.toedter.calendar.demo.TestDateEvaluator testDateEvaluator1;
     private com.toedter.calendar.demo.TestDateEvaluator testDateEvaluator2;
-    private javax.swing.JButton viewButton;
-    private javax.swing.JButton viewButton1;
-    private javax.swing.JButton viewCompensation;
-    private java.awt.Label year;
+    private javax.swing.JButton viewAttendanceButton;
+    private javax.swing.JButton viewCompensationButton;
+    private javax.swing.JButton viewSalaryButton;
+    private java.awt.Label yearLabel;
     // End of variables declaration//GEN-END:variables
 }

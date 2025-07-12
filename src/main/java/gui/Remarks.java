@@ -10,6 +10,7 @@ import java.util.Date;
 import model.LeaveRequest;
 import data.DBConnection;
 import java.sql.Connection;
+import utilities.UtilMethods;
 
 public class Remarks extends javax.swing.JFrame {
 
@@ -22,6 +23,7 @@ public class Remarks extends javax.swing.JFrame {
 
     public Remarks(String empNo, Date date, ViewRequest viewRequest) {
         initComponents();
+        UtilMethods.styleButton(submit);
         this.empNo = empNo;
         this.date = date;
         this.viewRequest = viewRequest;

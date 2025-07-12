@@ -13,16 +13,30 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import javax.swing.ImageIcon;
+import java.awt.Image;
+import java.awt.Graphics;
+import java.awt.Dimension;
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
+import java.awt.Font;
+import java.awt.Color;
+import javax.swing.BorderFactory;
+import javax.swing.border.Border;
+import utilities.UtilMethods;
 
 public class LogInPage extends JFrame implements ActionListener {
 
     private static final Logger LOGGER = Logger.getLogger(LogInPage.class.getName());
 
-    private JPanel panel;
-    private JLabel label, pwLabel, success;
+    private BackgroundPanel backgroundPanel;
+    private JLabel usernameLabel, passwordLabel, messageLabel;
     private JTextField userText;
     private JPasswordField pwText;
-    private JButton button;
+    private JButton loginButton;
+
+    private static final String BACKGROUND_IMAGE_PATH = "aesthetics.png";
 
     public LogInPage() {
         initializeUI();
@@ -31,38 +45,132 @@ public class LogInPage extends JFrame implements ActionListener {
 
     private void initializeUI() {
         setTitle("MotorPH Log In");
-        setSize(350, 200);
-        setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setMinimumSize(new Dimension(800, 500));
+        setLocationRelativeTo(null);
 
-        panel = new JPanel();
-        panel.setLayout(null);
-        add(panel);
+        
+        backgroundPanel = new BackgroundPanel(BACKGROUND_IMAGE_PATH);
+        backgroundPanel.setLayout(new GridBagLayout());
+        add(backgroundPanel);
 
-        label = new JLabel("User Name:");
-        label.setBounds(10, 20, 80, 25);
-        panel.add(label);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
 
+        // --- Username Label ---
+        usernameLabel = new JLabel("User Name:");
+        styleLabel(usernameLabel);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.EAST; // Align to the right
+        backgroundPanel.add(usernameLabel, gbc);
+
+        // --- Username Text Field ---
         userText = new JTextField(20);
-        userText.setBounds(100, 20, 165, 25);
-        panel.add(userText);
+        styleTextField(userText);
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.WEST; // Align to the left
+        gbc.fill = GridBagConstraints.HORIZONTAL; // Fill horizontal space
+        backgroundPanel.add(userText, gbc);
 
-        pwLabel = new JLabel("Password:");
-        pwLabel.setBounds(10, 60, 80, 25);
-        panel.add(pwLabel);
+        // --- Password Label ---
+        passwordLabel = new JLabel("Password:");
+        styleLabel(passwordLabel);
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.anchor = GridBagConstraints.EAST;
+        backgroundPanel.add(passwordLabel, gbc);
 
-        pwText = new JPasswordField();
-        pwText.setBounds(100, 60, 165, 25);
-        panel.add(pwText);
+        // --- Password Text Field ---
+        pwText = new JPasswordField(20);
+        styleTextField(pwText);
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        backgroundPanel.add(pwText, gbc);
 
-        button = new JButton("Login");
-        button.setBounds(135, 90, 80, 25);
-        button.addActionListener(this);
-        panel.add(button);
+        // --- Login Button ---
+        loginButton = new JButton("Login");
+        UtilMethods.styleButton(loginButton);
+        loginButton.addActionListener(this);
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.gridwidth = 2; // Span two columns
+        gbc.anchor = GridBagConstraints.CENTER; // Center the button
+        backgroundPanel.add(loginButton, gbc);
 
-        success = new JLabel("");
-        success.setBounds(10, 120, 300, 25);
-        panel.add(success);
+        // --- Message Label (for success/error) ---
+        messageLabel = new JLabel("");
+        styleMessageLabel(messageLabel);
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.CENTER;
+        backgroundPanel.add(messageLabel, gbc);
+
+        pack(); // Pack components to their preferred sizes
+    }
+
+    // Helper method to style JLabels
+    private void styleLabel(JLabel label) {
+        label.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        label.setForeground(Color.BLACK); // Dark text for contrast
+        // Optional: Add a semi-transparent background if text is hard to read on image
+        label.setOpaque(true);
+        label.setBackground(new Color(255, 255, 255, 180)); // White with 70% opacity
+        label.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+    }
+
+    // Helper method to style JTextFields and JPasswordFields
+    private void styleTextField(JTextField textField) {
+        textField.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        textField.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(150, 150, 150), 1), // Gray border
+                BorderFactory.createEmptyBorder(5, 8, 5, 8) // Inner padding
+        ));
+        textField.setPreferredSize(new Dimension(200, 30)); // Set preferred size
+    }
+
+    // Helper method to style the message label
+    private void styleMessageLabel(JLabel label) {
+        label.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        label.setForeground(Color.RED); // Default to red for error messages
+        label.setHorizontalAlignment(JLabel.CENTER); // Center text
+        // Optional: Add a semi-transparent background if text is hard to read on image
+        label.setOpaque(true);
+        label.setBackground(new Color(255, 255, 255, 180));
+    }
+
+    // Custom JPanel to draw the background image
+    class BackgroundPanel extends JPanel {
+        private Image backgroundImage;
+
+        public BackgroundPanel(String imagePath) {
+            try {
+                // Load the image from the specified path
+                ImageIcon icon = new ImageIcon(getClass().getClassLoader().getResource(imagePath));
+                if (icon.getImageLoadStatus() == java.awt.MediaTracker.ERRORED) {
+                    LOGGER.log(Level.SEVERE, "Failed to load background image: " + imagePath);
+                    // Fallback to a solid color if image fails to load
+                    setBackground(new Color(230, 230, 230));
+                } else {
+                    this.backgroundImage = icon.getImage();
+                }
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE, "Error loading background image: " + imagePath, e);
+                setBackground(new Color(230, 230, 230));
+            }
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            if (backgroundImage != null) {
+                g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+            }
+        }
     }
 
 
@@ -78,8 +186,6 @@ public class LogInPage extends JFrame implements ActionListener {
             String enteredPassword = new String(pwText.getPassword());
 
             if (authenticateUser(enteredUsername, enteredPassword)) {
-                // If authentication is successful, create the appropriate Employee instance
-                // Pass the username to createEmployeeInstance
                 Employee employee = Employee.createEmployeeInstance(enteredUsername);
                 if (employee != null) {
                     HomePage home = new HomePage(employee);
@@ -87,22 +193,22 @@ public class LogInPage extends JFrame implements ActionListener {
                     home.setVisible(true);
                     this.dispose();
                 } else {
-                    success.setText("Error: Employee details or access type not found.");
-                    success.setBounds(92, 120, 300, 25);
+                    messageLabel.setForeground(Color.ORANGE); // Use orange for warnings
+                    messageLabel.setText("Error: Employee details or access type not found.");
                 }
             } else {
-                success.setText("Incorrect Login Credentials");
-                success.setBounds(92, 120, 300, 25);
+                messageLabel.setForeground(Color.RED); // Use red for incorrect credentials
+                messageLabel.setText("Incorrect Login Credentials");
             }
 
         } catch (SQLException ex) {
             LOGGER.log(Level.SEVERE, "Database error during login", ex);
-            success.setText("Database error. Please try again later.");
-            success.setBounds(92, 120, 300, 25);
+            messageLabel.setForeground(Color.RED);
+            messageLabel.setText("Database error. Please try again later.");
         } catch (IllegalArgumentException ex) {
             LOGGER.log(Level.SEVERE, "Configuration error during employee instance creation", ex);
-            success.setText("Application error. Contact support.");
-            success.setBounds(92, 120, 300, 25);
+            messageLabel.setForeground(Color.RED);
+            messageLabel.setText("Application error. Contact support.");
         }
     }
 }

@@ -61,6 +61,17 @@
             <artifactId>jasperreports-fonts</artifactId>
             <version>7.0.3</version>
         </dependency>
+        <dependency>
+            <groupId>com.formdev</groupId>
+            <artifactId>flatlaf-extras</artifactId>
+            <version>3.6</version> <!-- or the latest version -->
+        </dependency>
+        <dependency>
+            <groupId>com.formdev</groupId>
+            <artifactId>flatlaf</artifactId>
+            <version>3.6</version>
+        </dependency>
+
     </dependencies>
     
     <build>

@@ -15,6 +15,7 @@ import java.util.List;
 import model.RegularEmployee;
 import data.DBConnection; 
 import java.sql.Connection; 
+import utilities.UtilMethods;
 
 public class UpdateEmployee extends javax.swing.JFrame {
 
@@ -25,6 +26,7 @@ public class UpdateEmployee extends javax.swing.JFrame {
 
     public UpdateEmployee() {
         initComponents();
+        UtilMethods.styleButton(updEmpData);
         this.setLocationRelativeTo(null);
         this.employeeDAO = new EmployeeDAO();
         this.salaryDAO = new SalaryDAO();
@@ -114,6 +116,7 @@ public class UpdateEmployee extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Updating Employee Data");
         setMinimumSize(new java.awt.Dimension(500, 650));
+        setResizable(false);
 
         empAdd.setText("House/Unit #, Brgy, City, Province, Region, Postal Code");
 

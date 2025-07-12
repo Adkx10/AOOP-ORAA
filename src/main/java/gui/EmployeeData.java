@@ -16,7 +16,12 @@ import model.Manager;
 import model.RegularEmployee;
 import dao.EmployeeDAO;
 import data.DBConnection; 
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.sql.Connection; 
+import javax.swing.BorderFactory;
+import utilities.UtilMethods;
 
 public class EmployeeData extends javax.swing.JFrame {
 
@@ -40,6 +45,7 @@ public class EmployeeData extends javax.swing.JFrame {
         this.empNo = (currentUser != null) ? currentUser.getEmployeeNo() : null;
         this.employeeDAO = new EmployeeDAO();
         initComponents();
+        applyCustomStyles();
         showDate();
 
         // This displays the entire table for Admin and Manager, while Regular Employees can only see their own information.
@@ -152,6 +158,7 @@ public class EmployeeData extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         backButton = new javax.swing.JButton();
         employeeNo = new javax.swing.JTextField();
@@ -170,33 +177,21 @@ public class EmployeeData extends javax.swing.JFrame {
 
         jPanel1.setBackground(new java.awt.Color(0, 102, 255));
         jPanel1.setPreferredSize(new java.awt.Dimension(150, 100));
+        jPanel1.setLayout(null);
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel2.setText("Employee ID: " + empNo);
+        jPanel1.add(jLabel2);
+        jLabel2.setBounds(6, 78, 220, 16);
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel3.setText("jLabel3");
+        jPanel1.add(jLabel3);
+        jLabel3.setBounds(10, 10, 160, 16);
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel3)
-                .addContainerGap())
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(78, Short.MAX_VALUE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(jLabel3))
-                .addContainerGap())
-        );
+        jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/motorph.png"))); // NOI18N
+        jPanel1.add(jLabel4);
+        jLabel4.setBounds(0, -90, 2430, 240);
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
 
@@ -484,7 +479,22 @@ public class EmployeeData extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Database error: " + ex.getMessage(), "Refresh Error", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_refreshButtonActionPerformed
+    private void applyCustomStyles() {
+        // Apply consistent button styling
+        UtilMethods.styleButton(addButton);
+        UtilMethods.styleButton(deleteButton);
+        UtilMethods.styleButton(refreshButton);
+        UtilMethods.styleButton(searchButton);
+        UtilMethods.styleButton(updateButton);
 
+        // Style back button slightly differently if desired (e.g., less prominent)
+        backButton.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        backButton.setBackground(new Color(100, 100, 100)); // Darker gray
+        backButton.setForeground(Color.WHITE);
+        backButton.setFocusPainted(false);
+        backButton.setBorder(BorderFactory.createRaisedBevelBorder());
+        backButton.setPreferredSize(new Dimension(120, 30));
+    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addButton;
     private javax.swing.JButton backButton;
@@ -493,6 +503,7 @@ public class EmployeeData extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
