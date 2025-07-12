@@ -1,6 +1,6 @@
 **HOW TO USE / TEST**
 
-1.) Clone this repository or download the NewMotorPH v1.0 JAR file.
+1.) Clone this repository or download the NewMotorPH v1.1 JAR file.
 
 2.) Import the payrollsystem_db.sql file into MySQL Workbench to create the database and tables.
 
@@ -63,6 +63,6 @@ SET FOREIGN_KEY_CHECKS = 1;
 
 If the repository has been cloned, and decided to run the source code kindly update the securedb.properties at src/main/resources/config/securedb.properties.
 
-If the NewMotorPH v1.0 JAR file has been downloaded from the Releases, kindly unzip the JAR file, edit the config/securedb.properties file inside to match your local setup.
+If the NewMotorPH v1.1 JAR file has been downloaded from the Releases, kindly unzip the JAR file, edit the config/securedb.properties file inside to match your local setup.
 
 Thank you so much! Have a blessed day!
